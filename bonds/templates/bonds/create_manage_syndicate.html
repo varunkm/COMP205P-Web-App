@@ -1,0 +1,31 @@
+{% extends 'bonds/base.html' %}
+{% block content %}
+
+<div class="section">
+  <div class="container">
+    <div class="row">
+      <div class = "col s12">
+        {% if manage %}
+        <h1>Manage Your Syndicate...</h1>
+        {% else %}
+        <h1>Create a New Syndicate...</h1>
+        {% endif %}
+      </div>
+    </div>  
+    <div class="row">
+      <form class = "col s12" action = "{{ endpoint }}" method = "post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value = "Submit"/>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+ $(document).ready(function() {
+    $('select').material_select();
+  });
+</script>
+
+{% endblock %}

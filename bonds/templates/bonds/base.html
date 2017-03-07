@@ -1,0 +1,42 @@
+<html>
+  <head>
+    <title>Home - Premium Bond Syndicates</title>
+
+    <!-- Compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/css/materialize.min.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    
+  </head>
+  <body>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/js/materialize.min.js"></script>
+    
+    <nav class="nav-wrapper purple darken-2">
+      <div class="container">
+        <a class="brand-logo" href="/bonds">Premium Bond Syndicates</a>
+      </div>
+      <ul class="right">
+        {% if not user.is_authenticated %}
+        <li>
+          <li><a class="waves-effect waves-light btn" href="/bonds/login">Sign In</a></li>
+        </li>
+        
+        {% else %}
+        <li>
+          <a class="navbar-right navbar-brand">{{ user.username }}</a>
+        </li>
+        <li>
+          <form class="valign-wrapper" method="post" action="/bonds/logout/">
+            {% csrf_token %}
+            <button type="submit" class="btn-flat white-text valign">Sign out</button>
+          </form>
+        </li>
+
+        {% endif %}
+    </nav>
+    {% block content %}
+    {% endblock %}
+  </body>
+</html>

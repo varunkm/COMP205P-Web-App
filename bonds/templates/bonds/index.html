@@ -1,0 +1,84 @@
+{% extends 'bonds/base.html' %}
+
+{% block content %}
+    
+     <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="purple white-text z-depth-2">
+      <div class="container">
+        <br><br><br>
+        {% if not user.is_authenticated %}
+        <h1>NS&I Premium Bond Syndicates</h1>
+        <p></p>
+        {% else %}
+        <h1>Welcome back, {{ user.first_name }}.</h1>
+        {% endif %}
+        <br>
+      </div>
+    </div>
+    
+    <div class="container section">
+      {% if user.is_authenticated %}
+      <!-- Example row of columns -->
+      <div class="row">
+        <div class="col s12 m4">
+          <div class="card">
+            <div class="card-content">
+              <span class="card-title">Your Groups</span>
+              <table>
+                <tr>
+                  <th>Group</th>
+                  <th>Winnings</th>
+                </tr>
+                {% for syndicate in syndicates %}
+                <tr>
+                  <td><a href="/bonds/syndicate/{{ syndicate.id }}">{{ syndicate.name }}</a></td>
+                  <td>£{{ syndicate.winnings }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            </div>
+          </div>
+        </div>
+        <div class="col s12 m4">
+          <div class ="card">
+            <div class = "card-content">
+              <span class="card-title">Your Winnings</span>
+              <h1>£{{ profile.winnings }}</h1>
+            </div>
+            <div class="card-action">
+              <a href="#" role="button">View details &raquo;</a>
+            </div>
+          </div>
+        </div>
+        <div class="col s12 m4">
+          <div class="card">
+            <div class="card-content">
+              <span class="card-title">Create a Syndicate</span>
+              <p>Create a syndicate for your friends, family, or colleagues and enjoy all the thrills of premium bonds as a group!</p>
+            </div>
+            <div class="card-action">
+              <a class="btn btn-default" href="syndicate/new" role="button">Create &raquo;</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <div class="row">
+           <div class="col-md-12">
+             <h1>Group Owned Premium Bonds are Here!</h1>
+             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam pretium arcu in quam sagittis pulvinar. Etiam maximus commodo elit ut congue. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nullam semper magna sed leo facilisis blandit vel id libero. Quisque eget elit et nisl mattis congue nec nec ante. Aliquam egestas hendrerit nulla quis condimentum. Nulla nec augue eu quam ultricies cursus. Cras a dui at erat imperdiet ullamcorper. Phasellus a urna non metus sodales fermentum. In mi dui, aliquam at tellus a, fermentum facilisis turpis. Fusce pharetra, nulla vel fringilla porta, tellus velit finibus sem, vel aliquet leo augue non ex. Aliquam imperdiet ipsum nec commodo auctor. Fusce tincidunt nisi ut tortor laoreet facilisis. Etiam feugiat leo nisl, ut iaculis felis ultrices at. Fusce vehicula at nunc eget eleifend.
+
+Donec at blandit libero, vitae volutpat sem. Pellentesque placerat pulvinar arcu id bibendum. Duis mauris turpis, faucibus vitae ligula a, ultrices scelerisque eros. Morbi faucibus dui non ex tempor varius. Mauris mi felis, hendrerit sed auctor nec, faucibus a neque. Aenean a tortor sit amet ante iaculis tempus. Sed placerat eu nulla quis sollicitudin. Ut interdum euismod mi. Sed vulputate consectetur mattis. Proin at fermentum neque, et pharetra dui. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+               Proin vel nisl vitae ligula aliquet rutrum. Nunc nunc leo, fermentum sit amet elit eu, accumsan faucibus tortor. Nullam tincidunt facilisis dolor nec accumsan. Donec consequat nisi vel mi feugiat elementum. Donec velit ipsum, finibus laoreet ullamcorper ut, sodales non purus. Suspendisse iaculis viverra lacus eu molestie. Sed lectus risus, cursus vel risus ac, vulputate efficitur elit. Maecenas mi libero, dictum et nibh a, volutpat suscipit orci. Praesent a diam vel velit elementum congue in ac sem. Sed eget imperdiet ligula. Etiam rhoncus facilisis mauris a iaculis.</p>
+           </div>
+    </div>
+      {% endif %}
+      <hr>
+
+      <footer>
+        <p>&copy; 2016 Company, Inc.</p>
+      </footer>
+    </div> <!-- /container -->
+   
+  {% endblock  %}
