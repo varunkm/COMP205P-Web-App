@@ -25,7 +25,7 @@ SECRET_KEY = '-^btet*3i&a0=^ga#%w4_%renvq&d+4n^4i+ot%3=ki7a%*!eh'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [*]
 
 LOGIN_REDIRECT_URL='/bonds/'
 AUTH_PROFILE_MODULE = 'bonds.UserProfile'
