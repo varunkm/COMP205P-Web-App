@@ -23,9 +23,9 @@ STATIC_ROOT = os.path.join(BASE_DIR,'static')
 SECRET_KEY = '-^btet*3i&a0=^ga#%w4_%renvq&d+4n^4i+ot%3=ki7a%*!eh'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG',True)
 
-ALLOWED_HOSTS = ['safe-atoll-64469.herokuapp.com']
+ALLOWED_HOSTS = ['safe-atoll-64469.herokuapp.com','127.0.0.1']
 
 LOGIN_REDIRECT_URL='/bonds/'
 AUTH_PROFILE_MODULE = 'bonds.UserProfile'
@@ -75,13 +75,30 @@ WSGI_APPLICATION = 'syndicate.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
     }
-}
+else:
+    DATABASES = {
+            'default':{
+        'ENGINE':'sql_server.pyodbc',
+        'NAME':'comp204p',
+        'USER':'team18comp204p@comp204pteam18',
+        'PASSWORD':'comp204p+',
+        'HOST':'tcp:comp204pteam18.database.windows.net',
+        'PORT':'1433',
+        'OPTIONS':{
+            'driver':'SQL Server Native Client 11.0',
+            'MARS_Connection':'True',
+            }
+        }
+    }
 
+     
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
