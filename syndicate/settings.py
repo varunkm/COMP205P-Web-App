@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
-
+import dj_database_url
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_ROOT = os.path.join(BASE_DIR,'static')
@@ -23,7 +23,7 @@ STATIC_ROOT = os.path.join(BASE_DIR,'static')
 SECRET_KEY = '-^btet*3i&a0=^ga#%w4_%renvq&d+4n^4i+ot%3=ki7a%*!eh'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG',True)
+DEBUG = 'DEBUG' not in os.environ
 
 ALLOWED_HOSTS = ['safe-atoll-64469.herokuapp.com','127.0.0.1']
 
@@ -74,29 +74,14 @@ WSGI_APPLICATION = 'syndicate.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
-
-if DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
-else:
-    DATABASES = {
-            'default':{
-        'ENGINE':'sql_server.pyodbc',
-        'NAME':'comp204p',
-        'USER':'team18comp204p@comp204pteam18',
-        'PASSWORD':'comp204p+',
-        'HOST':'tcp:comp204pteam18.database.windows.net',
-        'PORT':'1433',
-        'OPTIONS':{
-            'driver':'SQL Server Native Client 11.0',
-            'MARS_Connection':'True',
-            }
-        }
-    }
+}
+if not DEBUG:
+    DATABASES['default'].update(dj_database_url.config())
 
      
 
