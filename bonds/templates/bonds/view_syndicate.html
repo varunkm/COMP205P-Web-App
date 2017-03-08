@@ -23,9 +23,9 @@
           <div class="card-action">
             <a class="waves-effect waves-light btn activator"><i class="material-icons left">payment</i>Buy Bonds</a>
             {% if request.user == syndicate.owner %}
-            <form action="delete" method="POST">
+            <form class="right" action="delete" method="POST">
               {% csrf_token %}
-              <button type="submit" class="waves-effect waves-light btn red right"><i class="material-icons left">delete</i>Delete Group</button>
+              <button type="submit" class="waves-effect waves-light btn red"><i class="material-icons left">delete</i>Delete Group</button>
             </form>
             
             {% else %}
