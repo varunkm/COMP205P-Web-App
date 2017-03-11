@@ -1,91 +1,181 @@
 {% extends 'bonds/base.html' %}
 {% block content %}
-<div class="section">
-  <div class="container">
-    <div class="row">
-      <div class="col s12 m9">
-        <div class="card">
-          <div class="card-content purple white-text">
-            <h2>{{syndicate.name}}</h2>
-          </div>
-          <div class="card-content white">
-            <span class="card-title activator">Investment: £{{ group_invested }} - Winnings: £{{ group_winnings }}</span>
-            <p>Owned By: <b>{{syndicate.owner.first_name}}</b></p>
-            <p>Members: <b>
-                {% for userprofile in group_members %}
-                {{ userprofile.user.first_name }}
-                {% if not forloop.last %},
-                {% endif %}
-                {% endfor %}
-              </b>
-            </p>
-          </div>
-          <div class="card-action">
-            <a class="waves-effect waves-light btn activator"><i class="material-icons left">payment</i>Buy Bonds</a>
-            {% if request.user == syndicate.owner %}
-            <form class="right" action="delete" method="POST">
-              {% csrf_token %}
-              <button type="submit" class="waves-effect waves-light btn red"><i class="material-icons left">delete</i>Delete Group</button>
-            </form>
-            
-            {% else %}
-            <a class="waves-effect waves-light btn red right"><i class="material-icons left">delete</i>Leave Group</a>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+
+<div class="purple white-text z-depth-2">
+    <br>
+    <div class="container">
+        <h2>{{syndicate.name}}</h2>
+        <p>Founder: <b>{{syndicate.owner.first_name}}</b>
+            Members: <b>
+            {% for userprofile in group_members %}
+            {{ userprofile.user.first_name }}
+            {% if not forloop.last %},
             {% endif %}
-          </div>
-          <div class="card-reveal">
-            <span class="card-title grey-text text-darken-4">Buy Bonds<i class="material-icons right">close</i></span>
-            <br>
-            <form action="invest" method="POST">
-              {% csrf_token %}
-              <label for="amount_input">Slide to select purchase amount:</label>
-              <p class="range-field">
-                <input type="range" name="amount" id="amount_input" value="0" oninput="amount_id.value = amount_input.value" min="0" max="{{ user_profile.balance }}" />
-              </p>
-              <br>
-              <h4 class="grey-text">
-                Confirm purchase of £<output class="teal-text" name="amount_output" id="amount_id">0</output> worth of bonds?
-              </h4>
-              <button type="submit" class="waves-effect waves-light btn">Confirm</button>
-            </form>
-          </div>
-        </div>
-      </div>
+            {% endfor %}
+            </b>
+        </p>
+
+        {% if request.user == syndicate.owner %}
+        <form action="delete" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="waves-effect waves-light btn red"><i class="material-icons left">delete</i>Delete Group</button>
+        </form>
+
+        {% else %}
+        <a class="waves-effect waves-light btn red"><i class="material-icons left">delete</i>Leave Group</a>
+        {% endif %}
     </div>
-    
-    <div class="row">
-      <div class="col s12 m4">
-        <div class="card">
-          <div class="card-content">
-            <span class="card-title">Group Shares</span>
-            <table>
-              <tr>
-                <th>Member</th>
-                <th>Investment</th>
-              </tr>
-              {% for user_investment in bonds_per_user %}
-              <tr>
-                <td>{{ user_investment.name }}</td>
-                <td>£{{ user_investment.investment }}</td>
-              </tr>
-              {% endfor %}
-            </table>
-          </div>
-        </div>
-      </div>
-      
-      <div class="col s12 m5">
-        <div class="card">
-          <div class="card-content">
-            <span class="card-title">Your Investment:</span>
-            <h3>£{{ user_invested }} </h3>
-            <span class="card-title">Your Winnings:</span>
-            <h3>£{{ user_winnings }} </h3>
-          </div>
-        </div>
-      </div>
-    </div>
-    </div>
-  </div>
+    <br>
 </div>
+
+<div class="section">
+    <div class="container">
+        <div class="row">
+            <div class="col s12 m8">
+                <div class="row">
+                    <div class="col s6">
+                        <div class="card">
+                            <div class="card-content">
+                                <span class="card-title">Total Investment</span>
+                                <h3>£{{ group_invested }}</h3>
+                                <span class="card-title">Winnings</span>
+                                <h3>£{{ group_winnings }}</h3>
+                            </div>
+                            <div class="card-action">
+                                <a class="waves-effect waves-light btn activator"><i class="material-icons left">payment</i>Buy Bonds</a>
+                                
+                            </div>
+                            <div class="card-reveal">
+                                <span class="card-title grey-text text-darken-4">Buy Bonds<i class="material-icons right">close</i></span>
+                                <br>
+                                <form action="invest" method="POST">
+                                    {% csrf_token %}
+                                    <label for="amount_input">Slide to select purchase amount:</label>
+                                    <p class="range-field">
+                                        <input type="range" name="amount" id="amount_input" value="0" oninput="amount_id.value = amount_input.value" min="0" max="{{ user_profile.balance }}" />
+                                    </p>
+                                    <br>
+                                    <h4 class="grey-text">
+                                        Confirm purchase of £<output class="teal-text" name="amount_output" id="amount_id">0</output> worth of bonds?
+                                    </h4>
+                                    <button type="submit" class="waves-effect waves-light btn">Confirm</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col s6">
+                        <div class="card">
+                            <div class="card-content">
+                                <span class="card-title">Your Investment:</span>
+                                <h3>£{{ user_invested }} </h3>
+                                <span class="card-title">Your Winnings:</span>
+                                <h3>£{{ user_winnings }} </h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col s12 m6">
+                        <div class="card">
+                            <div class="card-content">
+                                <span class="card-title">Group Shares</span>
+                                <table>
+                                    <tr>
+                                        <th>Member</th>
+                                        <th>Investment</th>
+                                    </tr>
+                                    {% for user_investment in bonds_per_user %}
+                                    <tr>
+                                        <td>{{ user_investment.name }}</td>
+                                        <td>£{{ user_investment.investment }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col s12 m6">
+                        <div class="card">
+                            <div class="card-content">
+                                <div id ="pie-chart">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class ="col s12 m4">
+                <div class="card">
+                    <div class="card-content deep-purple accent-2 white-text">
+                        <span class="card-title"><h5>Group Chat<i class="small material-icons left">comment</i></h5></span>
+                    </div>
+                    <div class="card-content" style="overflow-y; height=400px;">
+                        {% for message in chat_messages %}
+                        <p><i>{{ message.writer.user.first_name }} @ {{ message.created }}</i></p>
+                        <p style="word-wrap:break-word;">{{ message.message }}</p>
+                        <br>
+                        {% endfor %}
+                    </div>
+                    <div class="card-action">
+                        <form action="messages" method="POST" class="">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <input id="message_input" name="messagetext" type="text" class="validate">
+                                    <label for="message_input">Type a message...</label>
+                                </div>
+                            </div>
+                            <button type="submit" class="waves-effect waves-light btn deep-purple accent-2"><i class="material-icons left">email</i>Post</button>
+                        </form>
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+ Highcharts.chart('pie-chart', {
+     chart: {
+         plotBackgroundColor: null,
+         plotBorderWidth: null,
+         plotShadow: false,
+         type: 'pie'
+     },
+     title:{
+         text:''
+     },
+     exporting: { enabled: false },
+     plotOptions: {
+         pie: {
+             allowPointSelect: true,
+             cursor: 'pointer',
+             dataLabels: {
+                 enabled: false,
+                 format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                 style: {
+                     color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                 }
+             }
+         }
+     },
+     series: [{
+         name: 'Brands',
+         colorByPoint: true,
+         {% if group_invested > 0 %}
+         data: [
+             {% for user_investment in bonds_per_user %}
+             {
+                 name: '{{ user_investment.name }}',
+                 y: {% widthratio user_investment.investment group_invested 1 %}
+             },
+             {% endfor %}
+         ]
+         {% endif %}
+     }]
+ });
+</script>
+
 
 {% endblock %}

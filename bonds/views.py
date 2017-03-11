@@ -127,7 +127,17 @@ def syndicateView(request, syn_id):
             return redirect('index')
     else:
         return redirect('index')
-
+def newMessage(request,syn_id):
+    if request.method=="POST":
+        user = request.user
+        syndicate = get_object_or_404(Syndicate, pk=syn_id)
+        message = str(request.POST.get("messagetext",""))
+        if user.is_authenticated() and syndicate in user.userprofile.syndicate_set.all():
+            message = ChatMessage(syndicate=syndicate,writer=user.userprofile,message=message)
+            message.save()
+            return redirect('syndicateView',syn_id=syn_id)
+    return redirect('index')
+            
 
 def invest(request, syn_id):
     if request.method == "POST":
