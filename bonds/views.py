@@ -101,6 +101,8 @@ def syndicateView(request, syn_id):
                 'investment':
                 groupbonds.filter(user_owner=member.user).count()
             } for member in syn_users]
+
+            chat_messages = ChatMessage.objects.filter(syndicate=syndicate)
             return render(request, 'bonds/view_syndicate.html', {
                 'syndicate':
                 syndicate,
@@ -118,6 +120,8 @@ def syndicateView(request, syn_id):
                 syn_users,
                 'bonds_per_user':
                 bonds_per_user,
+                'chat_messages':
+                chat_messages,
             })
         else:
             return redirect('index')
