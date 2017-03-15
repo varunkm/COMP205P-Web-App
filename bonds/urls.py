@@ -2,6 +2,10 @@ from django.conf.urls import url
 
 from . import views
 from django.contrib.auth import views as auth_views
+from django.conf.urls import url, include
+from apiviews import *
+from rest_framework.routers import DefaultRouter
+
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
@@ -13,4 +17,7 @@ urlpatterns = [
     url(r'^syndicate/new',views.syndicateNew,name='syndicateNew'),
     url(r'^login/$', auth_views.login, name='login'),
     url(r'^logout/$', auth_views.logout, name='logout'),
+    url(r'^api/user/(?P<pk>[0-9]+)/$', UserDetail.as_view()),
+    url(r'^api/syndicate/(?P<pk>[0-9]+)/$', SyndicateDetail.as_view()),
+    url(r'^api/syndicates/$', SyndicateList.as_view()),
 ]

@@ -22,9 +22,10 @@ def syndicateManage(request, syn_id):
     userprofile = request.user.userprofile
     if request.method == "POST":
         form = SyndicateForm(
-            request.POST, instance=syndicate, userprofile=userprofile)
+            data=request.POST, instance=syndicate, userprofile=userprofile)
         if form.is_valid():
             form.save()
+            syndicate.members.add(userprofile)
             return redirect('syndicateView', syn_id=syndicate.pk)
     else:
         form = SyndicateForm(instance=syndicate, userprofile=userprofile)
@@ -158,3 +159,4 @@ def invest(request, syn_id):
                 user.userprofile.save()
         return redirect('syndicateView', syn_id=syn_id)
     return redirect('syndicateView', syn_id=syn_id)
+

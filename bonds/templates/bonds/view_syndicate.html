@@ -2,32 +2,62 @@
 {% block content %}
 <script src="https://code.highcharts.com/highcharts.js"></script>
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
-
-<div class="purple white-text z-depth-2">
+<div class="purple z-depth-2">
     <br>
-    <div class="container">
-        <h2>{{syndicate.name}}</h2>
-        <p>Founder: <b>{{syndicate.owner.first_name}}</b>
-            Members: <b>
-            {% for userprofile in group_members %}
-            {{ userprofile.user.first_name }}
-            {% if not forloop.last %},
+</div>
+    <div class="card purple white-text" style="margin-top:-2px;width:100%">
+        <div class="card-content container">
+            <h2>{{syndicate.name}}</h2>
+            {% if request.user == syndicate.owner %}
+            <a class="waves-effect waves-light btn activator" href="manage"><i class="material-icons left">settings</i>Manage Group</a>
+            <br><br>
             {% endif %}
-            {% endfor %}
-            </b>
-        </p>
+            <blockquote>
+            <p>Founder: <b>{{syndicate.owner.first_name}}</b></p>
+            <p> Members: <b>
+                {% for userprofile in group_members %}
+                {{ userprofile.user.first_name }}{% if not forloop.last %},
+                {% endif %}
+                {% endfor %}
+                </b>
+            </p>
+            </blockquote>
+        </div>
 
-        {% if request.user == syndicate.owner %}
-        <form action="delete" method="POST">
-            {% csrf_token %}
-            <button type="submit" class="waves-effect waves-light btn red"><i class="material-icons left">delete</i>Delete Group</button>
-        </form>
+        <div class="card-reveal" style="width:100%;max-width=100%">
+            <div class="container">
+                <span class="card-title grey-text text-darken-4">Buy Bonds<i class="material-icons right">close</i></span>
+                <br>
+                <form action="invest" method="POST">
+                    {% csrf_token %}
+                    <label for="amount_input">Slide to select purchase amount:</label>
+                    <p class="range-field">
+                        <input type="range" name="amount" id="amount_input" value="0" oninput="amount_id.value = amount_input.value" min="0" max="{{ user_profile.balance }}" />
+                    </p>
+                    <br>
+                    <h4 class="grey-text">
+                        Confirm purchase of £<output class="teal-text" name="amount_output" id="amount_id">0</output> worth of bonds?
+                    </h4>
+                    <button type="submit" class="waves-effect waves-light btn">Confirm</button>
+                </form>
+            </div>
+        </div>
+        <div class="card-action container">
+            {% if request.user == syndicate.owner %}
+            <form action="delete" method="POST">
+                {% csrf_token %}
+                <button type="submit" class="waves-effect waves-light btn red"><i class="material-icons left">delete</i>Delete Group</button>
+                <a></a>
+                <a class="waves-effect waves-light btn activator"><i class="material-icons left">payment</i>Buy Bonds</a>
+            </form>
+            {% else %}
+            <a class="waves-effect waves-light btn red"><i class="material-icons left">delete</i>Leave Group</a>
+            <a class="waves-effect waves-light btn activator"><i class="material-icons left">payment</i>Buy Bonds</a>
+            {% endif %}
+            
 
-        {% else %}
-        <a class="waves-effect waves-light btn red"><i class="material-icons left">delete</i>Leave Group</a>
-        {% endif %}
+        </div>
     </div>
-    <br>
 </div>
 
 <div class="section">
@@ -42,26 +72,6 @@
                                 <h3>£{{ group_invested }}</h3>
                                 <span class="card-title">Winnings</span>
                                 <h3>£{{ group_winnings }}</h3>
-                            </div>
-                            <div class="card-action">
-                                <a class="waves-effect waves-light btn activator"><i class="material-icons left">payment</i>Buy Bonds</a>
-                                
-                            </div>
-                            <div class="card-reveal">
-                                <span class="card-title grey-text text-darken-4">Buy Bonds<i class="material-icons right">close</i></span>
-                                <br>
-                                <form action="invest" method="POST">
-                                    {% csrf_token %}
-                                    <label for="amount_input">Slide to select purchase amount:</label>
-                                    <p class="range-field">
-                                        <input type="range" name="amount" id="amount_input" value="0" oninput="amount_id.value = amount_input.value" min="0" max="{{ user_profile.balance }}" />
-                                    </p>
-                                    <br>
-                                    <h4 class="grey-text">
-                                        Confirm purchase of £<output class="teal-text" name="amount_output" id="amount_id">0</output> worth of bonds?
-                                    </h4>
-                                    <button type="submit" class="waves-effect waves-light btn">Confirm</button>
-                                </form>
                             </div>
                         </div>
                     </div>
