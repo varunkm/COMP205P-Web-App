@@ -19,8 +19,9 @@ urlpatterns = [
     url(r'^logout/$', auth_views.logout, name='logout'),
     url(r'^api/user/(?P<pk>[0-9]+)/$', UserDetail.as_view()),
     url(r'^api/syndicate/(?P<pk>[0-9]+)/$', SyndicateDetail.as_view()),
-    url(r'^api/syndicate/(?P<syndicate_pk>[0-9]+)/bonds/$', SyndicateDetail.as_view()),
+    url(r'^api/syndicate/(?P<syndicate_pk>[0-9]+)/bonds/$', BondsList.as_view()),
     url(r'^api/syndicates/$', SyndicateList.as_view()),
     url(r'^api/accounts/$', AccountList.as_view()),
     url(r'^api/account/(?P<pk>[0-9]+)/$', AccountDetail.as_view()),
+    url(r'^api/auth/',include('rest_auth.urls')),
 ]
