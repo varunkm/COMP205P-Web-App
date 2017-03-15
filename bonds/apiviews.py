@@ -58,3 +58,16 @@ class AccountDetail(APIView):
             return Response(serializer.data)
         else:
             return HttpResponseForbidden()
+
+class BondsList(APIView):
+    
+    def get(self,request,syndicate_pk,format=None):
+        syndicate = get_object_or_404(Syndicate,syndicate_pk)
+        if syndicate in request.user.user_profile.syndicate_set.all():
+            bonds = PremiumBond.objects.filter(group_owner=syndicate)
+            serializer = PremiumBondSerializer(bonds,many=True,context={'request':request})
+            return Response(serializer.data)
+        else:
+            return HttpResponseForbidden()
+
+        
