@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from models import *
 from serializers import *
-from django.http import Http404
+from django.http import Http404, HttpResponseForbidden
 from rest_framework.views import APIView
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -42,4 +42,19 @@ class SyndicateDetail(APIView):
             serializer = SyndicateSerializer(syndicate,context={'request':request})
             return Response(serializer.data)
         else:
-            raise Http404
+            return HttpResponseForbidden()
+
+class AccountList(APIView):
+    def get(self,request,format=None):
+        accounts = request.user.userprofile.account_set.all()
+        serializer = AccountSerializer(accounts,many=True,context={'request':request})
+        return Response(serializer.data)
+
+class AccountDetail(APIView):
+    def get(self,request,pk,format=None):
+        account = get_object_or_404(Account,pk=pk)
+        if account.owner == request.user.userprofile:
+            serializer = AccountSerializer(account,context={'request':request})
+            return Response(serializer.data)
+        else:
+            return HttpResponseForbidden()

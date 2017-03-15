@@ -37,6 +37,7 @@ class SyndicateSerializer(serializers.ModelSerializer):
 class AcctTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model=ProductInfo
+        exclude=[]
         
 class AccountSerializer(serializers.ModelSerializer):
     info = AcctTypeSerializer(read_only=True)
