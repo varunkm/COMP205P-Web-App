@@ -10,8 +10,14 @@ from rest_framework.views import APIView
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.parsers import JSONParser
+from rest_framework import status
+
 
 class UserDetail(APIView):
+    """
+####Return information about user with primary key specified in URL. Will return more detailed information about logged in user
+    """
     authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
     permission_classes = (IsAuthenticated,)
     
@@ -20,7 +26,7 @@ class UserDetail(APIView):
             return User.objects.get(pk=pk)
         except User.DoesNotExist:
             raise Http404
-
+    
     def get(self,request,pk,format=None):
         user=self.get_object(pk)
         if request.user == user:
@@ -31,6 +37,9 @@ class UserDetail(APIView):
             return Response(serializer.data)
 
 class SyndicateList(APIView):
+    """
+####Return a list of the user's syndicates
+    """
     authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
     permission_classes = (IsAuthenticated,)
     
@@ -40,6 +49,9 @@ class SyndicateList(APIView):
         return Response(serializer.data)
 
 class SyndicateDetail(APIView):
+    """
+####Returns details of syndicate with primary key specified in URL. Will only give information if logged in user belongs to the syndicate
+    """
     authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
     permission_classes = (IsAuthenticated,)
     
@@ -58,6 +70,9 @@ class SyndicateDetail(APIView):
             return HttpResponseForbidden()
 
 class AccountList(APIView):
+    """
+####Return a list of the logged in user's accounts
+    """
     authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
     permission_classes = (IsAuthenticated,)
     
@@ -67,6 +82,9 @@ class AccountList(APIView):
         return Response(serializer.data)
 
 class AccountDetail(APIView):
+    """
+####Returns details of account with primary key specified in URL. Will only give information if account belongs to logged in user
+    """
     authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
     permission_classes = (IsAuthenticated,)
     
@@ -79,6 +97,13 @@ class AccountDetail(APIView):
             return HttpResponseForbidden()
 
 class BondsList(APIView):
+    """
+    get:
+####Return list of bonds belonging to syndicate with primary specified in URL. Logged in user must belong to the syndicate.
+    post:
+####Buy a number of bonds on behalf of logged in user within the syndicate specified in URL. Expects JSON object specifiying amount. e.g. : 
+###`{"amount":5}`
+    """
     authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
     permission_classes = (IsAuthenticated,)
     
@@ -90,5 +115,27 @@ class BondsList(APIView):
             return Response(serializer.data)
         else:
             return HttpResponseForbidden()
-
         
+    parser_classes = (JSONParser,)
+    def post(self,request,syndicate_pk,format=None):
+        syndicate = get_object_or_404(Syndicate,pk=syndicate_pk)
+        content = request.data
+        profile = request.user.userprofile
+        
+        if syndicate in profile.syndicate_set.all():
+            if 'amount' in content.keys():
+                if content['amount'] <= profile.balance:
+                    amt = content['amount']
+                    for b in range(0,amt):
+                        new_bond = PremiumBond(user_owner=request.user,group_owner=syndicate)
+                        new_bond.save()
+                    profile.balance-=amt
+                    profile.save()
+                    return Response({'response':'success'},status=status.HTTP_201_CREATED)
+                else:
+                    return Response({'response':'failure','reason':'insufficient balance'},status=status.HTTP_409_CONFLICT)
+            else:
+                return Response({'response':'failure','reason':'unexpected request content'},status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return HttpResponseForbidden()
+    
