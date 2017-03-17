@@ -9,9 +9,9 @@ from django.db.models import Sum
 
 def index(request):
     if request.user.is_authenticated():
-        profile = request.user.userprofile
-        syndicates = profile.syndicate_set.all()
-        context = {'profile': profile, 'syndicates': syndicates}
+        user = request.user
+        syndicates = user.syndicate_set.all()
+        context = {'profile': user.userprofile, 'syndicates': syndicates}
         return render(request, 'bonds/index.html', context)
     else:
         return render(request, 'bonds/index.html')
@@ -19,16 +19,16 @@ def index(request):
 
 def syndicateManage(request, syn_id):
     syndicate = get_object_or_404(Syndicate, pk=syn_id)
-    userprofile = request.user.userprofile
+    user = request.user
     if request.method == "POST":
         form = SyndicateForm(
-            data=request.POST, instance=syndicate, userprofile=userprofile)
+            data=request.POST, instance=syndicate, user=user)
         if form.is_valid():
             form.save()
-            syndicate.members.add(userprofile)
+            syndicate.members.add(user)
             return redirect('syndicateView', syn_id=syndicate.pk)
     else:
-        form = SyndicateForm(instance=syndicate, userprofile=userprofile)
+        form = SyndicateForm(instance=syndicate, user=user)
     endpoint = ''
     return render(request, 'bonds/create_manage_syndicate.html',
                   {'manage': True,
@@ -37,19 +37,19 @@ def syndicateManage(request, syn_id):
 
 
 def syndicateNew(request):
-    userprofile = request.user.userprofile
+    user = request.user
     if request.method == "POST":
-        form = SyndicateForm(request.POST, userprofile=userprofile)
+        form = SyndicateForm(request.POST, user=user)
         if form.is_valid():
             new_syn = form.save(commit=False)
             new_syn.winnings = 0
             new_syn.owner = request.user
             new_syn.save()
             form.save_m2m()
-            new_syn.members.add(userprofile)
+            new_syn.members.add(user)
             return redirect('syndicateView', syn_id=new_syn.pk)
     else:
-        form = SyndicateForm(userprofile=userprofile)
+        form = SyndicateForm(user=user)
     endpoint = ''
     return render(request, 'bonds/create_manage_syndicate.html',
                   {'manage': False,
@@ -69,12 +69,13 @@ def syndicateDelete(request, syn_id):
     for member in syndicate_members:
         # get all live bonds belonging to member in this group
         live_user_bonds = PremiumBond.objects.filter(
-            group_owner=syndicate_to_delete, user_owner=member.user, live=True)
+            group_owner=syndicate_to_delete, user_owner=member, live=True)
         balance = live_user_bonds.count()
-        member.balance += balance
+        member.userprofile.balance += balance
         for bond in live_user_bonds:
             bond.live = False
             bond.save()
+        member.userprofile.save()
         member.save()
     syndicate_to_delete.delete()
     return redirect('index')
@@ -84,7 +85,7 @@ def syndicateView(request, syn_id):
     if request.user.is_authenticated():
         user = request.user
         userprofile = user.userprofile
-        user_syndicates = userprofile.syndicate_set.all()
+        user_syndicates = user.syndicate_set.all()
         syndicate = get_object_or_404(Syndicate, pk=syn_id)
         syn_users = syndicate.members.all()
         if syndicate in user_syndicates:
@@ -98,9 +99,9 @@ def syndicateView(request, syn_id):
             userinvested = userbonds.filter(live=True).count()
             bonds_per_user = [{
                 'name':
-                member.user.first_name,
+                member.first_name,
                 'investment':
-                groupbonds.filter(user_owner=member.user).count()
+                groupbonds.filter(user_owner=member).count()
             } for member in syn_users]
 
             chat_messages = ChatMessage.objects.filter(syndicate=syndicate)
@@ -134,7 +135,7 @@ def newMessage(request,syn_id):
         syndicate = get_object_or_404(Syndicate, pk=syn_id)
         message = str(request.POST.get("messagetext",""))
         if user.is_authenticated() and syndicate in user.userprofile.syndicate_set.all():
-            message = ChatMessage(syndicate=syndicate,writer=user.userprofile,message=message)
+            message = ChatMessage(syndicate=syndicate,writer=user,message=message)
             message.save()
             return redirect('syndicateView',syn_id=syn_id)
     return redirect('index')
@@ -145,7 +146,7 @@ def invest(request, syn_id):
         user = request.user
         syndicate = get_object_or_404(Syndicate, pk=syn_id)
         amount = int(request.POST.get("amount", 0))
-        if syndicate in user.userprofile.syndicate_set.all():
+        if syndicate in user.syndicate_set.all():
             # if user belongs to the syndicate
             if user.userprofile.balance > amount:
                 for i in range(amount):  # create "amount" premium bonds

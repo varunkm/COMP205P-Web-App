@@ -15,8 +15,8 @@
             <blockquote>
             <p>Founder: <b>{{syndicate.owner.first_name}}</b></p>
             <p> Members: <b>
-                {% for userprofile in group_members %}
-                {{ userprofile.user.first_name }}{% if not forloop.last %},
+                {% for user in group_members %}
+                {{ user.first_name }}{% if not forloop.last %},
                 {% endif %}
                 {% endfor %}
                 </b>

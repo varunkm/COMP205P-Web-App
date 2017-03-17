@@ -8,7 +8,7 @@ class SyndicateForm(ModelForm):
         model = Syndicate
         exclude = ['owner', 'winnings']
     def __init__(self,*args,**kwargs):
-        userprofile = kwargs.pop('userprofile')
+        user = kwargs.pop('user')
         super(SyndicateForm,self).__init__(*args,**kwargs)
-        self.fields['members'] = forms.ModelMultipleChoiceField(queryset=UserProfile.objects.exclude(pk=userprofile.pk))
+        self.fields['members'] = forms.ModelMultipleChoiceField(queryset=User.objects.exclude(pk=user.pk))
         
