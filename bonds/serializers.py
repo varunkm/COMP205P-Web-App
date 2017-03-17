@@ -6,7 +6,7 @@ from rest_framework import serializers
 class UserShortSerializer(serializers.ModelSerializer):
     class Meta:
         model=User
-        fields=['pk','username','first_name']
+        fields=['id','username','first_name']
     
 
 class SyndicateShortSerializer(serializers.ModelSerializer):
@@ -16,10 +16,16 @@ class SyndicateShortSerializer(serializers.ModelSerializer):
 
         
 class UserSerializer(serializers.ModelSerializer):
+    balance=serializers.IntegerField(source='userprofile.balance')
+    winnings=serializers.IntegerField(source='userprofile.winnings')
+    language=serializers.CharField(source='userprofile.language')
+    security_question=serializers.CharField(source='userprofile.security_question')
+    answer=serializers.CharField(source='userprofile.answer')
+    profilepicture=serializers.CharField(source='userprofile.profilepicture')
     
     class Meta:
         model = User
-        fields = ('pk','username', 'email','first_name','last_name')
+        fields = '__all__'
 
 class UserProfileSerializer(serializers.ModelSerializer):
     user = UserShortSerializer(read_only=True)

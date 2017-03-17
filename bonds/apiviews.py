@@ -31,7 +31,11 @@ class UserDetail(APIView):
         user=self.get_object(pk)
         if request.user == user:
             serializer = UserSerializer(user,context={'request':request})
-            return Response(serializer.data)
+            data = serializer.data
+            data['password']=''
+            data['security_question']=''
+            data['answer']=''
+            return Response(data)
         else:
             serializer = UserShortSerializer(user,context={'request':request})
             return Response(serializer.data)
