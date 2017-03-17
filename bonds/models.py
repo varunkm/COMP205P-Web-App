@@ -5,9 +5,14 @@ from django.db import models
 # Create your models here.
 
 class UserProfile(models.Model):
+    LANG_CHOICES = (('EN','ENGLISH'),('FR','FRENCH'))
     user = models.OneToOneField(User)
     balance = models.IntegerField()
     winnings = models.IntegerField()
+    language = models.TextField(default="EN",choices=LANG_CHOICES)
+    security_question = models.TextField(default="")
+    answer = models.TextField(default="")
+    profilepicture = models.TextField(default="")
 
     def __unicode__(self):
         return self.user.first_name+' '+self.user.last_name
@@ -15,9 +20,9 @@ class UserProfile(models.Model):
 class Syndicate(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     name = models.TextField()
-    owner = models.ForeignKey(User)
+    owner = models.ForeignKey(User,related_name='managed')
     winnings = models.IntegerField()
-    members  = models.ManyToManyField(UserProfile)
+    members  = models.ManyToManyField(User)
 
     def __unicode__(self):
         return self.name+': '+self.owner
@@ -37,7 +42,7 @@ class UserSyndicateWinnings(models.Model):
 class ChatMessage(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     syndicate = models.ForeignKey(Syndicate)
-    writer = models.ForeignKey(UserProfile)
+    writer = models.ForeignKey(User)
     message = models.CharField(max_length=140)
 
 class ProductInfo(models.Model):
@@ -50,7 +55,7 @@ class ProductInfo(models.Model):
     
 class Account(models.Model):
     created = models.DateTimeField(auto_now_add=True)
-    owner = models.ForeignKey(UserProfile)
+    owner = models.ForeignKey(User)
     info  = models.ForeignKey(ProductInfo)
     balance = models.DecimalField(max_digits=12,decimal_places=2)
 
