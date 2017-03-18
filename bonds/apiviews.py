@@ -21,24 +21,54 @@ class UserDetail(APIView):
     authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
     permission_classes = (IsAuthenticated,)
     
-    def get_object(self,pk):
+    def get_object(self,username):
         try:
-            return User.objects.get(pk=pk)
+            return User.objects.get(username=username)
         except User.DoesNotExist:
             raise Http404
     
-    def get(self,request,pk,format=None):
-        user=self.get_object(pk)
+    def get(self,request,username,format=None):
+        user=self.get_object(username)
         if request.user == user:
             serializer = UserSerializer(user,context={'request':request})
             data = serializer.data
-            data['password']=''
-            data['security_question']=''
-            data['answer']=''
             return Response(data)
         else:
             serializer = UserShortSerializer(user,context={'request':request})
             return Response(serializer.data)
+
+class UserCreate(APIView):
+    """
+    #POST
+    Post to this endpoint to create a new user.
+    """
+    authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
+    permission_classes = (IsAuthenticated,)
+    
+    def post(self,request,format=None):
+        expected_keys=['username','password','email','first_name','last_name','language','security_question','answer']
+        content = request.data
+        if set(content.keys())!=set(expected_keys) or len(content.keys())!=len(expected_keys):
+            return Response({'response':'failure','reason':'unexpected request content'},status=status.HTTP_400_BAD_REQUEST)
+        
+        user = User.objects.create_user(content['username'],email=content['email'],password=content['password'])
+        user.first_name=content['first_name']
+        user.last_name=content['last_name']
+        
+        user.userprofile= UserProfile(language=content['language'],security_question=content['security_question'],answer=content['answer'])
+        user.userprofile.save()
+        user.save()
+        return Response({'response':'success'},status=status.HTTP_201_CREATED)
+
+
+class ProductInfoList(APIView):
+    authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
+    permission_classes = (IsAuthenticated,)
+
+    def get(self,request,format=None):
+        info = ProductInfo.objects.all()
+        serializer=AcctTypeSerializer(info,many=True,context={'request':request})
+        return Response(serializer.data)
 
 class SyndicateList(APIView):
     """
@@ -102,11 +132,15 @@ class AccountDetail(APIView):
 
 class BondsList(APIView):
     """
-    get:
-####Return list of bonds belonging to syndicate with primary specified in URL. Logged in user must belong to the syndicate.
-    post:
-####Buy a number of bonds on behalf of logged in user within the syndicate specified in URL. Expects JSON object specifiying amount. e.g. : 
-###`{"amount":5}`
+    #POST:
+    Buy a number of bonds on behalf of logged in user within the syndicate specified in URL. Expects JSON object specifiying amount. e.g. : 
+
+    `{"amount":5}`
+    
+    #GET:
+    Return list of bonds belonging to syndicate with primary specified in URL. Logged in user must belong to the syndicate.
+
+
     """
     authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
     permission_classes = (IsAuthenticated,)

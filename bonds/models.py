@@ -7,12 +7,15 @@ from django.db import models
 class UserProfile(models.Model):
     LANG_CHOICES = (('EN','ENGLISH'),('FR','FRENCH'))
     user = models.OneToOneField(User)
-    balance = models.IntegerField()
-    winnings = models.IntegerField()
+    balance = models.IntegerField(default=0)
+    winnings = models.IntegerField(default=0)
     language = models.TextField(default="EN",choices=LANG_CHOICES)
     security_question = models.TextField(default="")
     answer = models.TextField(default="")
     profilepicture = models.TextField(default="")
+    dummy_sq = models.TextField(default="")
+    dummy_ans = models.TextField(default="")
+    dummy_pwd = models.TextField(default="")
 
     def __unicode__(self):
         return self.user.first_name+' '+self.user.last_name

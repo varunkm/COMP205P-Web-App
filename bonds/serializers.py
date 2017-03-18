@@ -19,13 +19,14 @@ class UserSerializer(serializers.ModelSerializer):
     balance=serializers.IntegerField(source='userprofile.balance')
     winnings=serializers.IntegerField(source='userprofile.winnings')
     language=serializers.CharField(source='userprofile.language')
-    security_question=serializers.CharField(source='userprofile.security_question')
-    answer=serializers.CharField(source='userprofile.answer')
+    security_question=serializers.CharField(source='userprofile.dummy_sq')
+    answer=serializers.CharField(source='userprofile.dummy_ans')
     profilepicture=serializers.CharField(source='userprofile.profilepicture')
+    password=serializers.CharField(source='userprofile.dummy_pwd')
     
     class Meta:
         model = User
-        fields = '__all__'
+        exclude=['password']
 
 class UserProfileSerializer(serializers.ModelSerializer):
     user = UserShortSerializer(read_only=True)
@@ -34,7 +35,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields=['user']
         
 class SyndicateSerializer(serializers.ModelSerializer):
-    members = UserProfileSerializer(read_only=True,many=True)
+    members = UserShortSerializer(read_only=True,many=True)
     owner = UserSerializer(read_only=True)
     class Meta:
         model=Syndicate
