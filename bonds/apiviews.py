@@ -12,6 +12,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.parsers import JSONParser
 from rest_framework import status
+from rest_framework.reverse import reverse
+
 
 
 class UserDetail(APIView):
@@ -41,6 +43,8 @@ class UserCreate(APIView):
     """
     #POST
     Post to this endpoint to create a new user.
+    
+    Expected keys: `'username','password','email','first_name','last_name','language','security_question','answer'`
     """
     authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
     permission_classes = (IsAuthenticated,)
@@ -176,4 +180,20 @@ class BondsList(APIView):
                 return Response({'response':'failure','reason':'unexpected request content'},status=status.HTTP_400_BAD_REQUEST)
         else:
             return HttpResponseForbidden()
+    
+class APIRoot(APIView):
+    def get(self,request):
+        return Response({
+            "user detail":reverse("user-detail",kwargs={'username':'varunmathur'},request=request),
+            "user create":reverse("user-create",request=request),
+            "syndicate list":reverse("syndicate-list",request=request),
+            "syndicate detail":reverse("syndicate-detail",kwargs={'pk':2},request=request),
+            "syndicate bonds":reverse("bonds-list",kwargs={'syndicate_pk':1},request=request),
+            "account list":reverse("account-list",request=request),
+            "account detail":reverse("account-detail",kwargs={"pk":1},request=request),
+            "product info list":reverse("product-list",request=request),
+            
+            
+        
+            })
     
