@@ -48,7 +48,7 @@ class SyndicateList(APIView):
     permission_classes = (IsAuthenticated,)
     
     def get(self,request,format=None):
-        syndicates = request.user.userprofile.syndicate_set.all()
+        syndicates = request.user.syndicate_set.all()
         serializer = SyndicateSerializer(syndicates,many=True,context={'request':request})
         return Response(serializer.data)
 
@@ -67,7 +67,7 @@ class SyndicateDetail(APIView):
 
     def get(self,request,pk,format=None):
         syndicate = self.get_object(pk)
-        if syndicate in request.user.userprofile.syndicate_set.all():
+        if syndicate in request.user.syndicate_set.all():
             serializer = SyndicateSerializer(syndicate,context={'request':request})
             return Response(serializer.data)
         else:
@@ -81,7 +81,7 @@ class AccountList(APIView):
     permission_classes = (IsAuthenticated,)
     
     def get(self,request,format=None):
-        accounts = request.user.userprofile.account_set.all()
+        accounts = request.user.account_set.all()
         serializer = AccountSerializer(accounts,many=True,context={'request':request})
         return Response(serializer.data)
 
@@ -94,7 +94,7 @@ class AccountDetail(APIView):
     
     def get(self,request,pk,format=None):
         account = get_object_or_404(Account,pk=pk)
-        if account.owner == request.user.userprofile:
+        if account.owner == request.user:
             serializer = AccountSerializer(account,context={'request':request})
             return Response(serializer.data)
         else:
@@ -113,7 +113,7 @@ class BondsList(APIView):
     
     def get(self,request,syndicate_pk,format=None):
         syndicate = get_object_or_404(Syndicate,pk=syndicate_pk)
-        if syndicate in request.user.userprofile.syndicate_set.all():
+        if syndicate in request.user.syndicate_set.all():
             bonds = PremiumBond.objects.filter(group_owner=syndicate)
             serializer = PremiumBondSerializer(bonds,many=True,context={'request':request})
             return Response(serializer.data)
@@ -126,7 +126,7 @@ class BondsList(APIView):
         content = request.data
         profile = request.user.userprofile
         
-        if syndicate in profile.syndicate_set.all():
+        if syndicate in request.user.syndicate_set.all():
             if 'amount' in content.keys():
                 if content['amount'] <= profile.balance:
                     amt = content['amount']
