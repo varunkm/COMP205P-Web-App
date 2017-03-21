@@ -36,6 +36,14 @@ def syndicateManage(request, syn_id):
                    'form': form})
 
 
+def UserView(request,user_id):
+    user = get_object_or_404(User,pk=user_id)
+    if request.user==user:
+        return redirect('profile')
+    #shared_syndicates = Syndicate.objects.filter
+    return render(request,'bonds/userview.html',
+                  {'user':user})
+
 def syndicateNew(request):
     user = request.user
     if request.method == "POST":
@@ -97,17 +105,15 @@ def syndicateView(request, syn_id):
                 user=user).filter(
                     syndicate=syndicate).aggregate(Sum('winnings'))
             userinvested = userbonds.filter(live=True).count()
-            bonds_per_user = [{
-                'name':
-                member.first_name,
-                'investment':
-                groupbonds.filter(user_owner=member).count()
-            } for member in syn_users]
+            bonds_per_user = syndicate.getSharesAsMoney()
+            user_shares    = syndicate.getSharesAsFractions()
 
             chat_messages = ChatMessage.objects.filter(syndicate=syndicate)
             return render(request, 'bonds/view_syndicate.html', {
                 'syndicate':
                 syndicate,
+                'members':
+                syndicate.members.all(),
                 'user_profile':
                 userprofile,
                 'user_invested':
@@ -122,6 +128,8 @@ def syndicateView(request, syn_id):
                 syn_users,
                 'bonds_per_user':
                 bonds_per_user,
+                'user_shares':
+                user_shares,
                 'chat_messages':
                 chat_messages,
             })
@@ -134,7 +142,7 @@ def newMessage(request,syn_id):
         user = request.user
         syndicate = get_object_or_404(Syndicate, pk=syn_id)
         message = str(request.POST.get("messagetext",""))
-        if user.is_authenticated() and syndicate in user.userprofile.syndicate_set.all():
+        if user.is_authenticated() and syndicate in user.syndicate_set.all():
             message = ChatMessage(syndicate=syndicate,writer=user,message=message)
             message.save()
             return redirect('syndicateView',syn_id=syn_id)

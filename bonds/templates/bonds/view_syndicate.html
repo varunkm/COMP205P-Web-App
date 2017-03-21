@@ -87,34 +87,35 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col s12 m6">
+                    <div class="col s12">
                         <div class="card">
-                            <div class="card-content">
-                                <span class="card-title">Group Shares</span>
-                                <table>
-                                    <tr>
-                                        <th>Member</th>
-                                        <th>Investment</th>
-                                    </tr>
-                                    {% for user_investment in bonds_per_user %}
-                                    <tr>
-                                        <td>{{ user_investment.name }}</td>
-                                        <td>£{{ user_investment.investment }}</td>
-                                    </tr>
-                                    {% endfor %}
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col s12 m6">
-                        <div class="card">
-                            <div class="card-content">
-                                <div id ="pie-chart">
+                            <div class="card-content row">
+                                <div class="col s6">
+                                    <span class="card-title">Group Shares</span>
+                                    <table>
+                                        <tr>
+                                            <th>Member</th>
+                                            <th>Investment</th>
+                                        </tr>
+                                        {% for user_investment in bonds_per_user %}
+                                        <tr>
+                                            <td>{{ user_investment.0.first_name }}</td>
+                                            <td>£{{ user_investment.1 }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </table>
+                                </div>
+                          
+                                <div class="col s6">
+                                    <div class="card-content">
+                                        <div id ="pie-chart">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
             <div class ="col s12 m4">
@@ -124,7 +125,7 @@
                     </div>
                     <div class="card-content" style="overflow-y; height=400px;">
                         {% for message in chat_messages %}
-                        <p><i>{{ message.writer.user.first_name }} @ {{ message.created }}</i></p>
+                        <p><i>{{ message.writer.first_name }} @ {{ message.created }}</i></p>
                         <p style="word-wrap:break-word;">{{ message.message }}</p>
                         <br>
                         {% endfor %}
@@ -141,51 +142,52 @@
                             <button type="submit" class="waves-effect waves-light btn deep-purple accent-2"><i class="material-icons left">email</i>Post</button>
                         </form>
                     </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<script>
- Highcharts.chart('pie-chart', {
-     chart: {
-         plotBackgroundColor: null,
-         plotBorderWidth: null,
-         plotShadow: false,
-         type: 'pie'
-     },
-     title:{
-         text:''
-     },
-     exporting: { enabled: false },
-     plotOptions: {
-         pie: {
-             allowPointSelect: true,
-             cursor: 'pointer',
-             dataLabels: {
-                 enabled: false,
-                 format: '<b>{point.name}</b>: {point.percentage:.1f} %',
-                 style: {
-                     color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+    <script>
+     Highcharts.chart('pie-chart', {
+         chart: {
+             plotBackgroundColor: null,
+             plotBorderWidth: null,
+             plotShadow: false,
+             type: 'pie',
+             marginTop: 0,
+         },
+         title:{
+             text:''
+         },
+         exporting: { enabled: false },
+         plotOptions: {
+             pie: {
+                 allowPointSelect: true,
+                 cursor: 'pointer',
+                 dataLabels: {
+                     enabled: false,
+                     format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                     style: {
+                         color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                     }
                  }
              }
-         }
-     },
-     series: [{
-         name: 'Brands',
-         colorByPoint: true,
-         {% if group_invested > 0 %}
-         data: [
-             {% for user_investment in bonds_per_user %}
-             {
-                 name: '{{ user_investment.name }}',
-                 y: {% widthratio user_investment.investment group_invested 1 %}
-             },
-             {% endfor %}
-         ]
-         {% endif %}
-     }]
- });
-</script>
+         },
+         series: [{
+             name: 'Investment',
+             colorByPoint: true,
+             {% if group_invested > 0 %}
+             data: [
+                 {% for user_share in user_shares %}
+                 {
+                     name: '{{ user_share.0.first_name }}',
+                     y: {{ user_share.1 }}
+                 },
+                 {% endfor %}
+             ]
+             {% endif %}
+         }]
+     });
+    </script>
 
 
 {% endblock %}
