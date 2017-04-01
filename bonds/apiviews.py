@@ -39,15 +39,44 @@ class UserDetail(APIView):
             serializer = UserShortSerializer(user,context={'request':request})
             return Response(serializer.data)
 
+
 class UserCreate(APIView):
     """
-    #POST
+    #POST - Create new user
     Post to this endpoint to create a new user.
     
     Expected keys: `'username','password','email','first_name','last_name','language','security_question','answer'`
+    
+    #PUT - Update user info
+    Send a "PUT" request with whatever data you want to change about current logged in user 
+
+    #GET - 
+    If you run a GET request to this endpoint, it will return the details of the currently logged in user. (based on token)
     """
     authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
     permission_classes = (IsAuthenticated,)
+
+    def put(self,request,format=None):
+        possible_user_keys=['username','password','email','first_name','last_name']
+        possible_userprofile_keys=['language','security_question','answer']
+        
+        user = request.user
+        change_content = request.data
+
+        for key in change_content.keys():
+            if key in possible_user_keys:
+                setattr(user,key,change_content[key])
+            elif key in possible_userprofile_keys:
+                setattr(user.userprofile,key,change_content[key])
+        user.save()
+        user.userprofile.save()
+        return Response(status=status.HTTP_200_OK)
+                        
+        
+        
+    def get(self,request):
+        userdetailview = UserDetail()
+        return userdetailview.get(request,request.user.username)
     
     def post(self,request,format=None):
         expected_keys=['username','password','email','first_name','last_name','language','security_question','answer']
@@ -62,7 +91,10 @@ class UserCreate(APIView):
         user.userprofile= UserProfile(language=content['language'],security_question=content['security_question'],answer=content['answer'])
         user.userprofile.save()
         user.save()
-        return Response({'response':'success'},status=status.HTTP_201_CREATED)
+        new_user_detail = UserDetail()
+        response = new_user_detail.get(request,user.username)
+        response.status=status.HTTP_201_CREATED
+        return response
 
 
 class ProductInfoList(APIView):
@@ -192,8 +224,5 @@ class APIRoot(APIView):
             "account list":reverse("account-list",request=request),
             "account detail":reverse("account-detail",kwargs={"pk":1},request=request),
             "product info list":reverse("product-list",request=request),
-            
-            
-        
             })
     
