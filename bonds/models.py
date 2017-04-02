@@ -29,7 +29,7 @@ class Syndicate(models.Model):
     members  = models.ManyToManyField(User)
 
     def __unicode__(self):
-        return self.name+': '+self.owner
+        return self.name+': '+str(self.owner)
 
     def getTotalInvestment(self):
         bonds = PremiumBond.objects.filter(group_owner=self,live=True)
@@ -58,11 +58,16 @@ class PremiumBond(models.Model):
     user_owner = models.ForeignKey(User)
     group_owner = models.ForeignKey(Syndicate, blank=True, null=True)
     winnings = models.IntegerField(default=0)
+    def __unicode__(self):
+        return str(self.pk)
 
 class UserSyndicateWinnings(models.Model):
     user=models.ForeignKey(User)
     syndicate=models.ForeignKey(Syndicate)
     winnings=models.IntegerField()
+
+    def __unicode__(self):
+        return str(self.user) +" : "+str(self.syndicate)
 
 class ChatMessage(models.Model):
     created = models.DateTimeField(auto_now_add=True)
@@ -88,7 +93,7 @@ class Account(models.Model):
     def daysSinceInception(self):
         now = datetime.datetime.now()
         created = self.created
-        delta = (now-created).days
+        delta = (now.date()-created.date()).days
         return delta
     
     def eligibleForPayout(self):
@@ -101,6 +106,7 @@ class Account(models.Model):
             
 
 class Transaction(models.Model):
+    created=models.DateTimeField(auto_now_add=True)
     account = models.ForeignKey(Account)
     amount = models.DecimalField(max_digits=12,decimal_places=2)
     kind = models.TextField()

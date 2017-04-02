@@ -21,16 +21,21 @@ urlpatterns = [
     
     url(r'^api/user/(?P<username>[a-zA-Z0-9]+)/$', UserDetail.as_view(),name='user-detail'),
     url(r'^api/users/$',UserCreate.as_view(),name='user-create'),
+    url(r'^api/users/transactions/$',UserTransactions.as_view(),name='user-transactions'),
     
     url(r'^api/syndicate/(?P<pk>[0-9]+)/$', SyndicateDetail.as_view(),name='syndicate-detail'),
     url(r'^api/syndicates/$', SyndicateList.as_view(),name='syndicate-list'),
     
     url(r'^api/accounts/$', AccountList.as_view(),name='account-list'),
     url(r'^api/account/(?P<pk>[0-9]+)/$', AccountDetail.as_view(),name='account-detail'),
+    url(r'^api/account/(?P<pk>[0-9]+)/withdraw/$', AccountWithdrawal.as_view(),name='account-withdrawal'),
+    url(r'^api/account/(?P<pk>[0-9]+)/deposit/$', AccountDeposit.as_view(),name='account-deposit'),
+    url(r'^api/account/(?P<pk>[0-9]+)/transfer/$', AccountTransfer.as_view(),name='account-transfer'),
+    url(r'^api/account/(?P<pk>[0-9]+)/transactions/$', AccountTransactions.as_view(),name='account-transactions'),
 
     url(r'^api/productinfo/$', ProductInfoList.as_view(),name='product-list'),
     
-    url(r'^api/syndicate/(?P<syndicate_pk>[0-9]+)/bonds$', BondsList.as_view(),name='bonds-list'),
+    url(r'^api/syndicate/(?P<syndicate_pk>[0-9]+)/bonds/$', BondsList.as_view(),name='bonds-list'),
     
     url(r'^api/auth/',include('rest_auth.urls')),
     url(r'^api/docs/',include_docs_urls(title='Comp204P Team 18 API')),

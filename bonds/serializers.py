@@ -26,7 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        exclude=['password']
+        exclude=['password','groups','user_permissions','date_joined','is_staff','is_active','is_superuser','last_login']
 
 class UserProfileSerializer(serializers.ModelSerializer):
     user = UserShortSerializer(read_only=True)
@@ -61,4 +61,7 @@ class PremiumBondSerializer(serializers.ModelSerializer):
         model = PremiumBond
         fields=('created','live','user_owner','group_owner','winnings')
 
-
+class TransactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction
+        fields = '__all__'

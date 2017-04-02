@@ -99,11 +99,16 @@ def syndicateView(request, syn_id):
         if syndicate in user_syndicates:
             groupbonds = PremiumBond.objects.filter(group_owner=syndicate)
             userbonds = groupbonds.filter(user_owner=user)
-            groupwinnings = groupbonds.aggregate(Sum('winnings'))
+            groupwinnings = syndicate.winnings
             groupinvested = groupbonds.filter(live=True).count()
-            userwinnings = UserSyndicateWinnings.objects.filter(
-                user=user).filter(
-                    syndicate=syndicate).aggregate(Sum('winnings'))
+            user_syn_win = UserSyndicateWinnings.objects.filter(user=user, syndicate=syndicate)
+            userwinnings=0
+            if len(user_syn_win) == 0:
+                new_user_syn_win = UserSyndicateWinnings(user=user,syndicate=syndicate,winnings=0)
+                new_user_syn_win.save()
+                userwinnings = 0
+            else:
+                userwinnings = UserSyndicateWinnings.objects.filter(user=user, syndicate=syndicate)[0].winnings
             userinvested = userbonds.filter(live=True).count()
             bonds_per_user = syndicate.getSharesAsMoney()
             user_shares    = syndicate.getSharesAsFractions()
@@ -119,11 +124,11 @@ def syndicateView(request, syn_id):
                 'user_invested':
                 userinvested,
                 'user_winnings':
-                userwinnings.get('winnings_sum', 0),
+                userwinnings,
                 'group_invested':
                 groupinvested,
                 'group_winnings':
-                groupwinnings.get('winnings_sum', 0),
+                groupwinnings,
                 'group_members':
                 syn_users,
                 'bonds_per_user':
