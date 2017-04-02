@@ -326,6 +326,8 @@ class APIRoot(APIView):
             "account withdrawal":reverse("account-withdrawal",kwargs={"pk":1},request=request),
             "account deposit":reverse("account-deposit",kwargs={"pk":1},request=request),
             "account transfer":reverse("account-transfer",kwargs={"pk":1},request=request),
+            "account transactions":reverse("account-transactions",kwargs={"pk":1},request=request),
+            "user transactions":reverse("user-transactions",request=request),
             "product info list":reverse("product-list",request=request),
             })
     
