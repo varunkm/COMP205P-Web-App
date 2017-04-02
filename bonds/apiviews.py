@@ -40,10 +40,8 @@ class UserDetail(APIView):
             return Response(serializer.data)
 
 
-class UserCreate(APIView):
+class UserViewModify(APIView):
     """
-    #POST - Create new user
-    Post to this endpoint to create a new user.
     
     Expected keys: `'username','password','email','first_name','last_name','language','security_question','answer'`
     
@@ -77,7 +75,12 @@ class UserCreate(APIView):
     def get(self,request):
         userdetailview = UserDetail()
         return userdetailview.get(request,request.user.username)
-    
+
+class UserCreate(APIView):
+    """
+    #POST - Create new user
+    Post to this endpoint to create a new user.
+    """
     def post(self,request,format=None):
         expected_keys=['username','password','email','first_name','last_name','language','security_question','answer']
         content = request.data
@@ -317,7 +320,8 @@ class APIRoot(APIView):
     def get(self,request):
         return Response({
             "user detail":reverse("user-detail",kwargs={'username':'varunmathur'},request=request),
-            "user create/update/retrieve":reverse("user-create",request=request),
+            "user update/view":reverse("user-view-and-modify",request=request),
+            "user create":reverse("user-create",request=request),
             "syndicate list":reverse("syndicate-list",request=request),
             "syndicate detail":reverse("syndicate-detail",kwargs={'pk':2},request=request),
             "syndicate bonds":reverse("bonds-list",kwargs={'syndicate_pk':1},request=request),

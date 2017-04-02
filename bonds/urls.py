@@ -19,9 +19,10 @@ urlpatterns = [
     url(r'^login/$', auth_views.login, name='login'),
     url(r'^logout/$', auth_views.logout, name='logout'),
     
-    url(r'^api/user/(?P<username>[a-zA-Z0-9]+)/$', UserDetail.as_view(),name='user-detail'),
-    url(r'^api/users/$',UserCreate.as_view(),name='user-create'),
-    url(r'^api/users/transactions/$',UserTransactions.as_view(),name='user-transactions'),
+    url(r'^api/user/name/(?P<username>[a-zA-Z0-9]+)/$', UserDetail.as_view(),name='user-detail'),
+    url(r'^api/user/$',UserViewModify.as_view(),name='user-view-and-modify'),
+    url(r'^api/user/create/$',UserCreate.as_view(),name='user-create'),
+    url(r'^api/user/transactions/$',UserTransactions.as_view(),name='user-transactions'),
     
     url(r'^api/syndicate/(?P<pk>[0-9]+)/$', SyndicateDetail.as_view(),name='syndicate-detail'),
     url(r'^api/syndicates/$', SyndicateList.as_view(),name='syndicate-list'),
