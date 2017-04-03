@@ -188,6 +188,7 @@ class AccountWithdrawal(APIView):
                 account.save()
                 transaction = Transaction(account=account,amount=amt,kind="WITHDRAWAL")
                 transaction.save()
+                return Response({"response":"withdrew","amount":amt},status=status.HTTP_200_OK)
             else:
                 return Response({"response":"insufficient funds to complete transaction"},status=status.HTTP_409_CONFLICT)
         else:
@@ -212,6 +213,7 @@ class AccountDeposit(APIView):
                 account.save()
                 transaction = Transaction(account=account,amount=amt,kind="WITHDRAWAL")
                 transaction.save()
+                return Response({"response":"deposited","amount":amt},status=status.HTTP_200_OK)
             else:
                 return Response({"response":"cannot deposit negative amount"},status=status.HTTP_409_CONFLICT)
         else:
