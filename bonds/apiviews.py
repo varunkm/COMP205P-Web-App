@@ -13,6 +13,7 @@ from rest_framework import status
 from rest_framework.parsers import JSONParser
 from rest_framework import status
 from rest_framework.reverse import reverse
+from rest_framework.authtoken.models import Token
 
 
 
@@ -68,8 +69,7 @@ class UserViewModify(APIView):
                 setattr(user.userprofile,key,change_content[key])
         user.save()
         user.userprofile.save()
-        return Response(status=status.HTTP_200_OK)
-                        
+        return Response(status=status.HTTP_200_OK)                        
         
         
     def get(self,request):
@@ -94,10 +94,8 @@ class UserCreate(APIView):
         user.userprofile= UserProfile(language=content['language'],security_question=content['security_question'],answer=content['answer'])
         user.userprofile.save()
         user.save()
-        new_user_detail = UserDetail()
-        response = new_user_detail.get(request,user.username)
-        response.status=status.HTTP_201_CREATED
-        return response
+        token = Token.objects.get(user=user)
+        return Response({"token":token.key})
 
 
 class ProductInfoList(APIView):
