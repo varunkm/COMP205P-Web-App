@@ -14,9 +14,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.authtoken.models import Token
-
-
-
+from rest_framework.renderers import *
 class UserDetail(APIView):
     """
 ####Return information about user with primary key specified in URL. Will return more detailed information about logged in user
@@ -315,21 +313,23 @@ class BondsList(APIView):
             return HttpResponseForbidden()
     
 class APIRoot(APIView):
+    renderer_classes = (StaticHTMLRenderer,)
     def get(self,request):
-        return Response({
-            "user detail by username":reverse("user-detail",kwargs={'username':'varunmathur'},request=request),
-            "my user update/view":reverse("user-view-and-modify",request=request),
-            "user create":reverse("user-create",request=request),
-            "syndicate list":reverse("syndicate-list",request=request),
-            "syndicate detail":reverse("syndicate-detail",kwargs={'pk':2},request=request),
-            "syndicate bonds":reverse("bonds-list",kwargs={'syndicate_pk':1},request=request),
-            "account list":reverse("account-list",request=request),
-            "account detail":reverse("account-detail",kwargs={"pk":1},request=request),
-            "account withdrawal":reverse("account-withdrawal",kwargs={"pk":1},request=request),
-            "account deposit":reverse("account-deposit",kwargs={"pk":1},request=request),
-            "account transfer":reverse("account-transfer",kwargs={"pk":1},request=request),
-            "account transactions":reverse("account-transactions",kwargs={"pk":1},request=request),
-            "user transactions":reverse("user-transactions",request=request),
-            "product info list":reverse("product-list",request=request),
-            })
+        return Response(
+            "<h1>API ROOT</h1>"+
+            "<h3>user detail by username : <a href='"+str(reverse("user-detail",kwargs={'username':'varunmathur'},request=request))+"'>"+str(reverse("user-detail",kwargs={'username':'varunmathur'},request=request))+"</a></h3>"+
+            "<h3>logged in user update/view : <a href='"+str(reverse("user-view-and-modify",request=request))+"'>"+str(reverse("user-view-and-modify",request=request))+"</a></h3>"+
+            "<h3>user create : <a href='"+str(reverse("user-create",request=request))+"'>"+str(reverse("user-create",request=request))+"</a></h3>"+
+            "<h3>syndicate list : <a href='"+str(reverse("syndicate-list",request=request))+"'>"+str(reverse("syndicate-list",request=request))+"</a></h3>"+
+            "<h3>syndicate detail : <a href='"+str(reverse("syndicate-detail",kwargs={'pk':2},request=request))+"'>"+str(reverse("syndicate-detail",kwargs={'pk':2},request=request))+"</a></h3>"+
+            "<h3>syndicate bonds : <a href='"+str(reverse("bonds-list",kwargs={'syndicate_pk':1},request=request))+"'>"+str(reverse("bonds-list",kwargs={'syndicate_pk':1},request=request))+"</a></h3>"+
+            "<h3>account list : <a href='"+str(reverse("account-list",request=request))+"'>"+str(reverse("account-list",request=request))+"</a></h3>"+
+            "<h3>account detail : <a href='"+str(reverse("account-detail",kwargs={"pk":1},request=request))+"'>"+str(reverse("account-detail",kwargs={"pk":1},request=request))+"</a></h3>"+
+            "<h3>account withdrawal : <a href='"+str(reverse("account-withdrawal",kwargs={"pk":1},request=request))+"'>"+str(reverse("account-withdrawal",kwargs={"pk":1},request=request))+"</a></h3>"+
+            "<h3>account deposit : <a href='"+str(reverse("account-deposit",kwargs={"pk":1},request=request))+"'>"+str(reverse("account-deposit",kwargs={"pk":1},request=request))+"</a></h3>"+
+            "<h3>account transfer : <a href='"+str(reverse("account-transfer",kwargs={"pk":1},request=request))+"'>"+str(reverse("account-transfer",kwargs={"pk":1},request=request))+"</a></h3>"+
+            "<h3>account transactions : <a href='"+str(reverse("account-transactions",kwargs={"pk":1},request=request))+"'>"+str(reverse("account-transactions",kwargs={"pk":1},request=request))+"</a></h3>"+
+            "<h3>user transactions : <a href='"+str(reverse("user-transactions",request=request))+"'>"+str(reverse("user-transactions",request=request))+"</a></h3>"+
+            "<h3>product info list : <a href='"+str(reverse("product-list",request=request))+"'>"+str(reverse("product-list",request=request))+"</a></h3>"
+            )
     
