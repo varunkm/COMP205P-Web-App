@@ -42,10 +42,7 @@ class UserDetail(APIView):
 
 
 class UserViewModify(APIView):
-    """
-    
-    Expected keys: `'username','password','email','first_name','last_name','language','security_question','answer'`
-    
+    """    
     #PUT - Update user info
     Send a "PUT" request with whatever data you want to change about current logged in user 
 
@@ -79,6 +76,7 @@ class UserViewModify(APIView):
 class UserCreate(APIView):
     """
     #POST - Create new user
+    Expected keys: `"username","password","email","first_name","last_name","language","security_question","answer"`
     Post to this endpoint to create a new user.
     """
     def post(self,request,format=None):
@@ -319,8 +317,8 @@ class BondsList(APIView):
 class APIRoot(APIView):
     def get(self,request):
         return Response({
-            "user detail":reverse("user-detail",kwargs={'username':'varunmathur'},request=request),
-            "user update/view":reverse("user-view-and-modify",request=request),
+            "user detail by username":reverse("user-detail",kwargs={'username':'varunmathur'},request=request),
+            "my user update/view":reverse("user-view-and-modify",request=request),
             "user create":reverse("user-create",request=request),
             "syndicate list":reverse("syndicate-list",request=request),
             "syndicate detail":reverse("syndicate-detail",kwargs={'pk':2},request=request),
