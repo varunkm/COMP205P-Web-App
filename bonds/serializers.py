@@ -48,10 +48,9 @@ class AcctTypeSerializer(serializers.ModelSerializer):
         
 class AccountSerializer(serializers.ModelSerializer):
     info = AcctTypeSerializer(read_only=True)
-    owner = UserSerializer(read_only=True)
     class Meta:
         model=Account
-        fields=('created','id','owner','info','balance')
+        fields=('created','id','info','balance')
         
 
 class PremiumBondSerializer(serializers.ModelSerializer):
