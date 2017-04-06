@@ -1,6 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, render_to_response
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
+from django.template import RequestContext
 from models import *
 from .forms import *
 from django.db.models import Sum
@@ -174,3 +175,20 @@ def invest(request, syn_id):
         return redirect('syndicateView', syn_id=syn_id)
     return redirect('syndicateView', syn_id=syn_id)
 
+def register(request):
+    if request.method == 'POST':
+        uf = UserForm(request.POST, prefix='user')
+        upf = UserProfileForm(request.POST, prefix='userprofile')
+        if uf.is_valid() * upf.is_valid():
+            user_data = uf.cleaned_data
+            user = User(username=user_data['username'],first_name=user_data['first_name'],last_name=user_data['last_name'],email=user_data['email'])
+            user.set_password(user_data['password'])
+            user.save()
+            userprofile = upf.save(commit=False)
+            userprofile.user = user
+            userprofile.save()
+            return redirect('index')
+    else:
+        uf = UserForm(prefix='user')
+        upf = UserProfileForm(prefix='userprofile')
+    return render(request,'registration/register.html',{'userform':uf,'userprofileform':upf})

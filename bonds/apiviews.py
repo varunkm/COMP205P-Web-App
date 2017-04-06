@@ -24,8 +24,7 @@ class ProductInfoList(APIView):
         info = ProductInfo.objects.all()
         serializer=AcctTypeSerializer(info,many=True,context={'request':request})
         return Response(serializer.data)
-
-
+    
 class AccountList(APIView):
     """
     #POST
@@ -44,8 +43,10 @@ class AccountList(APIView):
 
         syndicates = request.user.syndicate_set.all()
         synserializer = SyndicateAsAcctSerializer(syndicates,many=True,context={'request':request})
-        
-        return Response(acctserializer.data+synserializer.data)
+
+        user = request.user
+        pbserializer = UserPremiumBondsAsAcctSerializer(user,context={'request':request})
+        return Response(acctserializer.data+[pbserializer.data]+synserializer.data)
     
     def post(self,request,format=None):
         user = request.user

@@ -50,26 +50,47 @@ class SyndicateAsAcctSerializer(serializers.ModelSerializer):
         serialized = AcctTypeSerializer(info).data
         serialized['name'] = obj.name
         return serialized
-        
+
+class UserPremiumBondsAsAcctSerializer(serializers.ModelSerializer):
+    created = serializers.SerializerMethodField(method_name='getDate')
+    balance = serializers.SerializerMethodField(method_name='getTotalInvestment')
+    info    = serializers.SerializerMethodField(method_name='getInfo')
+    class Meta:
+        model=User
+        fields=('created','id','info','balance')
+
+    def getInfo(self,obj):
+        info = ProductInfo.objects.get(pk=6)
+        return AcctTypeSerializer(info).data
     
+    def getTotalInvestment(self,obj):
+        bonds = PremiumBond.objects.filter(group_owned=False,user_owner=obj,live=True)
+        return len(bonds)
+    def getDate(self,obj):
+        return obj.date_joined
         
 class SyndicateSerializer(serializers.ModelSerializer):
-    members = UserShortSerializer(read_only=True,many=True)
+    members = serializers.SerializerMethodField(method_name='getMembersAndShares')
     owner = UserShortSerializer(read_only=True)
     balance = serializers.SerializerMethodField(method_name='getTotalInvestment')
-    shares  = serializers.SerializerMethodField(method_name='getUserShares')
     class Meta:
         model=Syndicate
-        fields=('name','owner','balance','winnings','shares','members')
+        fields=('name','owner','balance','winnings','members')
     def getTotalInvestment(self,obj):
         return obj.getTotalInvestment()
 
-    def getUserShares(self,obj):
-        shares = {}
+    def getMembersAndShares(self,obj):
+        mem_list =[]
         user_share = obj.getSharesAsMoney()
         for (user,share) in user_share:
-            shares[user.pk]=share
-        return shares
+            user_data = UserShortSerializer(user).data
+            user_data['share']=share
+            mem_list+=[user_data]
+        return mem_list
+    
+    def getUserShares(self,obj):
+        shares = {}
+       
         
 class AcctTypeSerializer(serializers.ModelSerializer):
     class Meta:

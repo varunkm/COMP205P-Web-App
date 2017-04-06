@@ -1,14 +1,15 @@
 {% extends '../bonds/base.html' %}
 
-{% block title %}Login{% endblock %}
+{% block title %}Register{% endblock %}
 
 {% block content %}
 <div class="container">
-  <h2>Login</h2>
+  <h2>Create an Account</h2>
   <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Login</button>
+    {{ userform }}
+    {{ userprofileform }}
+    <button type="submit">Register</button>
   </form>
   </div>
 {% endblock %}

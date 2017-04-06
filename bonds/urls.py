@@ -20,6 +20,7 @@ urlpatterns = [
     url(r'^syndicate/new',views.syndicateNew,name='syndicateNew'),
     url(r'^login/$', auth_views.login, name='login'),
     url(r'^logout/$', auth_views.logout, name='logout'),
+    url(r'^register/$', views.register, name='register'),
 
     # user api views (view by name, view and update logged in user, create new user, view logged in user transactions
     url(r'^api/user/name/(?P<username>[a-zA-Z0-9]+)/$', UserDetail.as_view(),name='user-detail'),
