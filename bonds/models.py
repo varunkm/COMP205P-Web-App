@@ -32,6 +32,9 @@ class Syndicate(models.Model):
     winnings = models.IntegerField()
     members  = models.ManyToManyField(User)
 
+    def getBonds(self):
+        return PremiumBond.objects.filter(group_owner=self)
+
     def __unicode__(self):
         return self.name+': '+str(self.owner)
 
@@ -53,6 +56,35 @@ class Syndicate(models.Model):
         for (user,investment) in user_investment:
             user_shares+=[(user,float(investment)/float(total_investment))]
         return user_shares
+    
+    def sellBonds(self,user,amount):
+        if not user in self.members.all():
+            return False
+        userBonds = PremiumBonds.objects.filter(group_owner=self,user_owner=user,live=True)
+        if len(userBonds < amount):
+            return False
+        bondsToDelete = userBonds[:amount]
+        for bond in bondsToDelete:
+            bond.live=False
+            bond.save()
+        user.userprofile.balance+=amount
+        user.userprofile.save()
+        return True
+
+    def buyBonds(self,user,amount):
+        if not user in self.members.all():
+            return False
+        if user.userprofile.balance < amount:
+            return False
+
+        user.userprofile.balance -= amount
+        user.userprofile.save()
+
+        for i in range(amount):
+            new_bond = PremiumBond(user_owner=user,group_owner=self)
+            new_bond.save()
+        
+        return True
         
 
 class PremiumBond(models.Model):
