@@ -29,6 +29,25 @@ class SyndicateList(APIView):
         serializer = SyndicateSerializer(syndicates,many=True,context={'request':request})
         return Response(serializer.data)
 
+
+class AddUser(APIView):
+    """
+    #POST
+    add user by email. Specify email in json: `{"user":"foo@bar.com"}`. The backend will lookup user in database by email and add them to the group if the user is found.
+    """
+
+    def post(self,request,syndicate_pk,format=None):
+        syndicate = get_object_or_404(Syndicate,pk=syndicate_pk)
+        user = request.user
+        content = request.data
+        if 'user' in content.keys():
+            email = content['user']
+            user_to_add = get_object_or_404(User,email=email)
+            syndicate.addMember(user_to_add)
+            return Response({'response':'success'},status=HTTP_200_OK)
+        return Response({'response':'failure'},status=HTTP_400_BAD_REQUEST)
+    
+    
 class RemoveUser(APIView):
     """
     #POST

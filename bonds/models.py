@@ -102,6 +102,11 @@ class Syndicate(models.Model):
             self.removeMember(member)
         self.delete()
 
+    def addMember(self,user):
+        if not user in self.members.all():
+            self.members.add(user)
+        return True
+
 class PremiumBond(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     live = models.BooleanField(default=True)
