@@ -53,7 +53,7 @@ class UserViewModify(APIView):
     permission_classes = (IsAuthenticated,)
 
     def put(self,request,format=None):
-        possible_user_keys=['username','password','email','first_name','last_name']
+        possible_user_keys=['username','email','first_name','last_name']
         possible_userprofile_keys=['balance','language','security_question','answer']
         
         user = request.user
@@ -64,6 +64,10 @@ class UserViewModify(APIView):
                 setattr(user,key,change_content[key])
             elif key in possible_userprofile_keys:
                 setattr(user.userprofile,key,change_content[key])
+
+        if "password" in change_content.keys():
+            if change_content['password']!='':
+                user.set_password(change_content['password'])
         user.save()
         user.userprofile.save()
         return Response(status=status.HTTP_200_OK)                        

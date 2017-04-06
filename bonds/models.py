@@ -19,9 +19,9 @@ class UserProfile(models.Model):
     security_question = models.TextField(default="")
     answer = models.TextField(default="")
     profilepicture = models.TextField(default="")
-    dummy_sq = models.TextField(default="",null=True)
-    dummy_ans = models.TextField(default="",null=True)
-    dummy_pwd = models.TextField(default="",null=True)
+    dummy_sq = models.TextField(default="",null=True,blank=True)
+    dummy_ans = models.TextField(default="",null=True,blank=True)
+    dummy_pwd = models.TextField(default="",null=True,blank=True)
 
     def __unicode__(self):
         return self.user.first_name+' '+self.user.last_name
