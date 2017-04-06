@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^api/user/$',UserViewModify.as_view(),name='user-view-and-modify'),
     url(r'^api/user/create/$',UserCreate.as_view(),name='user-create'),
     url(r'^api/user/transactions/$',UserTransactions.as_view(),name='user-transactions'),
+    url(r'^api/user/bonds/$',UserBonds.as_view(),name='user-bonds'),
 
     
     url(r'^api/syndicate/(?P<pk>[0-9]+)/$', SyndicateDetail.as_view(),name='syndicate-detail'),

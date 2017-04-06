@@ -101,7 +101,52 @@ class UserTransactions(APIView):
     #GET
     Get a list of all of the logged in users' transactions 
     """
+    
+    authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
+    permission_classes = (IsAuthenticated,)
+    
     def get(self,request,format=None):
         transactions = Transaction.objects.filter(account__owner__exact=request.user)
         serializer = TransactionSerializer(transactions,many=True,context={'request':request})
         return Response(serializer.data)
+
+class UserBonds(APIView):
+    """
+    #GET
+    Get user's sole owned premium bond account
+    
+    #POST
+    Buy or sell sole owned premium bonds
+    """
+    authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
+    permission_classes = (IsAuthenticated,)
+
+    def get(self,request,format=None):
+        user = request.user
+        serializer = UserPremiumBondSerializer(user,context={'request':request})
+        return Response(serializer.data)
+
+    def post(self,request,format=None):
+        user = request.user
+        content = request.data
+        up = user.userprofile
+        
+        if 'amount' in content.keys() and 'kind' in content.keys():
+            amount = content['amount']
+            if content['kind']=='BUY':
+                success = up.buyBonds(amount)
+                if not success:
+                    return Response({'response':'failure'},status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    return Response({'response':'success'},status=status.HTTP_200_OK)
+            elif content['kind']=='SELL':
+                success = up.sellBonds(amount)
+                if not success:
+                    return Response({'response':'failure'},status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    return Response({'response':'success'},status=status.HTTP_200_OK)
+            else:
+                return Response({'response':'failure'},status=status.HTTP_400_BAD_REQUEST)
+
+        
+    

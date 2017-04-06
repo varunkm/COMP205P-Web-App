@@ -6,6 +6,7 @@ from rest_framework.authtoken.models import Token
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
+from django.db.models import Sum
 
 # Create your models here.
 
@@ -18,12 +19,39 @@ class UserProfile(models.Model):
     security_question = models.TextField(default="")
     answer = models.TextField(default="")
     profilepicture = models.TextField(default="")
-    dummy_sq = models.TextField(default="")
-    dummy_ans = models.TextField(default="")
-    dummy_pwd = models.TextField(default="")
+    dummy_sq = models.TextField(default="",null=True)
+    dummy_ans = models.TextField(default="",null=True)
+    dummy_pwd = models.TextField(default="",null=True)
 
     def __unicode__(self):
         return self.user.first_name+' '+self.user.last_name
+    def getSoleOwnedWinnings(self):
+        bonds = PremiumBond.objects.filter(group_owned=False,user_owner=self.user).aggregate(Sum('winnings'))
+        if bonds['winnings__sum'] is not None:
+            return bonds['winnings__sum']
+        else:
+            return 0
+    def buyBonds(self,amount):
+        if amount > self.balance:
+            return False
+        for i in range(amount):
+            new_bond = PremiumBond(group_owned=False,user_owner=self.user,live=True,winnings=0)
+            new_bond.save()
+        self.balance-=amount
+        self.save()
+        return True
+
+    def sellBonds(self,amount):
+        userBonds = PremiumBond.objects.filter(group_owned=False,user_owner=self.user,live=True)
+        if len(userBonds) < amount:
+            return False
+        bondsToDelete = userBonds[:amount]
+        for bond in bondsToDelete:
+            bond.live=False
+            bond.save()
+        self.balance+=amount
+        self.save()
+        return True
 
 class Syndicate(models.Model):
     created = models.DateTimeField(auto_now_add=True)
@@ -137,8 +165,6 @@ class ProductInfo(models.Model):
     interest_rate = models.DecimalField(max_digits=6,decimal_places=5)
     min_deposit = models.IntegerField()
     payout_period = models.IntegerField()
-
-    
     
 class Account(models.Model):
     created = models.DateTimeField(auto_now_add=True)

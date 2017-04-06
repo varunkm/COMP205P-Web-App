@@ -51,6 +51,27 @@ class SyndicateAsAcctSerializer(serializers.ModelSerializer):
         serialized['name'] = obj.name
         return serialized
 
+class UserPremiumBondSerializer(serializers.ModelSerializer):
+    created = serializers.SerializerMethodField(method_name='getDate')
+    winnings= serializers.SerializerMethodField(method_name='getWinnings')
+    balance = serializers.SerializerMethodField(method_name='getTotalInvestment')
+    info    = serializers.SerializerMethodField(method_name='getInfo')
+    class Meta:
+        model=User
+        fields=('created','id','info','balance','winnings')
+
+    def getWinnings(self,obj):
+        return obj.userprofile.getSoleOwnedWinnings()
+    def getInfo(self,obj):
+        info = ProductInfo.objects.get(pk=6)
+        return AcctTypeSerializer(info).data
+    
+    def getTotalInvestment(self,obj):
+        bonds = PremiumBond.objects.filter(group_owned=False,user_owner=obj,live=True)
+        return len(bonds)
+    def getDate(self,obj):
+        return obj.date_joined
+    
 class UserPremiumBondsAsAcctSerializer(serializers.ModelSerializer):
     created = serializers.SerializerMethodField(method_name='getDate')
     balance = serializers.SerializerMethodField(method_name='getTotalInvestment')
