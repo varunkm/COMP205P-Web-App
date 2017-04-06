@@ -188,6 +188,7 @@ class APIRoot(APIView):
             self.genAPIRow("syndicate list",str(reverse("syndicate-list",request=request)))+
             self.genAPIRow("syndicate detail",str(reverse("syndicate-detail",kwargs={'pk':2},request=request)))+
             self.genAPIRow("syndicate bonds",str(reverse("bonds-list",kwargs={'syndicate_pk':1},request=request)))+
+            self.genAPIRow("syndicate remove user",str(reverse("remove-user",kwargs={'syndicate_pk':1},request=request)))+
             self.genAPIRow("account list",str(reverse("account-list",request=request)))+
             self.genAPIRow("account detail",str(reverse("account-detail",kwargs={"pk":1},request=request)))+
             self.genAPIRow("account withdrawal",str(reverse("account-withdrawal",kwargs={"pk":1},request=request)))+

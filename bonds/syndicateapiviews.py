@@ -19,7 +19,7 @@ from rest_framework.renderers import *
 
 class SyndicateList(APIView):
     """
-####Return a list of the user's syndicates
+    Return a list of the user's syndicates
     """
     authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
     permission_classes = (IsAuthenticated,)
@@ -29,9 +29,35 @@ class SyndicateList(APIView):
         serializer = SyndicateSerializer(syndicates,many=True,context={'request':request})
         return Response(serializer.data)
 
+class RemoveUser(APIView):
+    """
+    #POST
+    remove user from syndicate. User must be specified in JSON with their id.
+    `{"user":3}`.
+
+    If the owner is removed from the syndicate, the syndicate will be safely deleted.
+    """
+    def post(self,request,syndicate_pk,format=None):
+        syndicate=get_object_or_404(Syndicate,pk=syndicate_pk)
+        user = request.user
+        content = request.data
+        if syndicate.owner != user:
+            return HttpResponseForbidden()
+
+        if 'user' in content.keys():
+            user_to_delete = get_object_or_404(User,pk=content['user'])
+            if user_to_delete==user:
+                syndicate.safeDestroy()
+                return Response({"response":"success, syndicate deleted"},status=status.HTTP_200_OK)
+            else:
+                syndicate.removeMember(user_to_delete)
+                return Response({"response":"success, user removed"},status=status.HTTP_200_OK)
+        return Response({"response":"failure"},status=status.HTTP_400_BAD_REQUEST)
+            
+
 class SyndicateDetail(APIView):
     """
-####Returns details of syndicate with primary key specified in URL. Will only give information if logged in user belongs to the syndicate
+    Returns details of syndicate with primary key specified in URL. Will only give information if logged in user belongs to the syndicate
     """
     authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
     permission_classes = (IsAuthenticated,)

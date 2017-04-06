@@ -31,6 +31,7 @@ urlpatterns = [
     url(r'^api/syndicate/(?P<pk>[0-9]+)/$', SyndicateDetail.as_view(),name='syndicate-detail'),
     url(r'^api/syndicates/$', SyndicateList.as_view(),name='syndicate-list'),
     url(r'^api/syndicate/(?P<syndicate_pk>[0-9]+)/bonds/$', BondsList.as_view(),name='bonds-list'),
+    url(r'^api/syndicate/(?P<syndicate_pk>[0-9]+)/manage/remove_member/$', RemoveUser.as_view(),name='remove-user'),
 
     
     url(r'^api/accounts/$', AccountList.as_view(),name='account-list'),

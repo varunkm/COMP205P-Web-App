@@ -54,7 +54,7 @@ class UserViewModify(APIView):
 
     def put(self,request,format=None):
         possible_user_keys=['username','password','email','first_name','last_name']
-        possible_userprofile_keys=['language','security_question','answer']
+        possible_userprofile_keys=['balance','language','security_question','answer']
         
         user = request.user
         change_content = request.data

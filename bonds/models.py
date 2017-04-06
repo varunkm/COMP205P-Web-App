@@ -35,6 +35,9 @@ class Syndicate(models.Model):
     def getBonds(self):
         return PremiumBond.objects.filter(group_owner=self)
 
+    def getLiveUserBonds(self,usr):
+        return PremiumBond.objects.filter(group_owner=self,user_owner=usr,live=True)
+    
     def __unicode__(self):
         return self.name+': '+str(self.owner)
 
@@ -60,8 +63,8 @@ class Syndicate(models.Model):
     def sellBonds(self,user,amount):
         if not user in self.members.all():
             return False
-        userBonds = PremiumBonds.objects.filter(group_owner=self,user_owner=user,live=True)
-        if len(userBonds < amount):
+        userBonds = PremiumBond.objects.filter(group_owner=self,user_owner=user,live=True)
+        if len(userBonds) < amount:
             return False
         bondsToDelete = userBonds[:amount]
         for bond in bondsToDelete:
@@ -85,7 +88,19 @@ class Syndicate(models.Model):
             new_bond.save()
         
         return True
+
+    def removeMember(self,usr):
+        if not usr in self.members.all():
+            return False
+        usr_bonds = self.getLiveUserBonds(usr)
+        amt = len(usr_bonds)
+        self.sellBonds(usr,amt)
+        self.members.remove(usr)  
         
+    def safeDestroy(self):
+        for member in self.members.all():
+            self.removeMember(member)
+        self.delete()
 
 class PremiumBond(models.Model):
     created = models.DateTimeField(auto_now_add=True)
