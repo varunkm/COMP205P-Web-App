@@ -43,7 +43,7 @@ class SyndicateAsAcctSerializer(serializers.ModelSerializer):
         fields=('created','id','info','balance')
         
     def getTotalInvestment(self,obj):
-        return obj.getTotalInvestment()
+        return str(obj.getTotalInvestment())+'.00'
 
     def getInfo(self,obj):
         info = ProductInfo.objects.get(pk=7)
