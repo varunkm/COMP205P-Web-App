@@ -33,13 +33,43 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model=UserProfile
         fields=['user']
+
+
+class SyndicateAsAcctSerializer(serializers.ModelSerializer):
+    balance = serializers.SerializerMethodField(method_name='getTotalInvestment')
+    info    = serializers.SerializerMethodField(method_name='getInfo')
+    class Meta:
+        model=Syndicate
+        fields=('created','id','info','balance')
+        
+    def getTotalInvestment(self,obj):
+        return obj.getTotalInvestment()
+
+    def getInfo(self,obj):
+        info = ProductInfo.objects.get(pk=7)
+        serialized = AcctTypeSerializer(info).data
+        serialized['name'] = obj.name
+        return serialized
+        
+    
         
 class SyndicateSerializer(serializers.ModelSerializer):
     members = UserShortSerializer(read_only=True,many=True)
-    owner = UserSerializer(read_only=True)
+    owner = UserShortSerializer(read_only=True)
+    balance = serializers.SerializerMethodField(method_name='getTotalInvestment')
+    shares  = serializers.SerializerMethodField(method_name='getUserShares')
     class Meta:
         model=Syndicate
-        fields=('name','owner','winnings','members')
+        fields=('name','owner','balance','winnings','shares','members')
+    def getTotalInvestment(self,obj):
+        return obj.getTotalInvestment()
+
+    def getUserShares(self,obj):
+        shares = {}
+        user_share = obj.getSharesAsMoney()
+        for (user,share) in user_share:
+            shares[user.pk]=share
+        return shares
         
 class AcctTypeSerializer(serializers.ModelSerializer):
     class Meta:

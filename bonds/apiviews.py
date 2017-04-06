@@ -40,8 +40,12 @@ class AccountList(APIView):
     
     def get(self,request,format=None):
         accounts = request.user.account_set.all()
-        serializer = AccountSerializer(accounts,many=True,context={'request':request})
-        return Response(serializer.data)
+        acctserializer = AccountSerializer(accounts,many=True,context={'request':request})
+
+        syndicates = request.user.syndicate_set.all()
+        synserializer = SyndicateAsAcctSerializer(syndicates,many=True,context={'request':request})
+        
+        return Response(acctserializer.data+synserializer.data)
     
     def post(self,request,format=None):
         user = request.user
