@@ -182,8 +182,8 @@ class Account(models.Model):
         days = self.daysSinceInception()
         return days % self.info.payout_period == 0
     def payout(self):
-        amount = self.info.interest_rate*balance
-        balance+=amount
+        amount = self.info.interest_rate*self.balance
+        self.balance+=amount
         return amount
             
 
