@@ -19,8 +19,8 @@ class UserSerializer(serializers.ModelSerializer):
     balance=serializers.IntegerField(source='userprofile.balance')
     winnings=serializers.IntegerField(source='userprofile.winnings')
     language=serializers.CharField(source='userprofile.language')
-    security_question=serializers.CharField(source='userprofile.dummy_sq')
-    answer=serializers.CharField(source='userprofile.dummy_ans')
+    security_question=serializers.CharField(source='userprofile.security_question')
+    answer=serializers.CharField(source='userprofile.answer')
     profilepicture=serializers.CharField(source='userprofile.profilepicture')
     password=serializers.CharField(source='userprofile.dummy_pwd')
     
