@@ -54,15 +54,21 @@ class RemoveUser(APIView):
     remove user from syndicate. User must be specified in JSON with their id.
     `{"id":3}`.
 
-    If the owner is removed from the syndicate, the syndicate will be safely deleted.
+    The owner of the syndicate can remove anyone from the syndicate. Anyone else who is a member of the syndicate is only allowed to remove themselves. They do this by specifiying their own id in the JSON data. If the owner is removed from the syndicate, the syndicate will be safely deleted.
     """
     def post(self,request,syndicate_pk,format=None):
         syndicate=get_object_or_404(Syndicate,pk=syndicate_pk)
         user = request.user
         content = request.data
         if syndicate.owner != user:
-            return HttpResponseForbidden()
-
+            if 'id' in content.keys():
+            user_to_delete = get_object_or_404(User,pk=content['id'])
+            if user_to_delete==user:
+                syndicate.safeDestroy()
+                return Response({"response":"success, syndicate deleted"},status=status.HTTP_200_OK)
+            else:
+                return HttpResponseForbidden()
+        #elif user is owner:
         if 'id' in content.keys():
             user_to_delete = get_object_or_404(User,pk=content['id'])
             if user_to_delete==user:
