@@ -33,7 +33,7 @@ class SyndicateList(APIView):
 class AddUser(APIView):
     """
     #POST
-    add user by email. Specify email in json: `{"user":"foo@bar.com"}`. The backend will lookup user in database by email and add them to the group if the user is found.
+    add user by email. Specify email in json: `{"email\":"foo@bar.com"}`. The backend will lookup user in database by email and add them to the group if the user is found.
     """
 
     def post(self,request,syndicate_pk,format=None):
@@ -52,7 +52,7 @@ class RemoveUser(APIView):
     """
     #POST
     remove user from syndicate. User must be specified in JSON with their id.
-    `{"user":3}`.
+    `{"id":3}`.
 
     If the owner is removed from the syndicate, the syndicate will be safely deleted.
     """
