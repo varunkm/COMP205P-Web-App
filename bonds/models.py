@@ -165,6 +165,7 @@ class ProductInfo(models.Model):
     interest_rate = models.DecimalField(max_digits=6,decimal_places=5)
     min_deposit = models.IntegerField()
     payout_period = models.IntegerField()
+    link = models.CharField(max_length=140,default="")
     
 class Account(models.Model):
     created = models.DateTimeField(auto_now_add=True)
