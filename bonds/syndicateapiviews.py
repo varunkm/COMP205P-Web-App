@@ -19,6 +19,11 @@ from rest_framework.renderers import *
 
 class SyndicateList(APIView):
     """
+    #POST -
+    Create a syndicate. Expects name of syndicate and list of emails of members to be added.
+    `{"name":"example","emails":["foo@bar.com",bar@foo.com"]}`
+
+    #GET -
     Return a list of the user's syndicates
     """
     authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
@@ -28,6 +33,29 @@ class SyndicateList(APIView):
         syndicates = request.user.syndicate_set.all()
         serializer = SyndicateSerializer(syndicates,many=True,context={'request':request})
         return Response(serializer.data)
+
+    def post(self,request,format=None):
+        owner = request.user
+        content = request.data
+
+        if 'name' in content.keys() and 'emails' in content.keys():
+            new_syndicate = Syndicate(name=content['name'],owner=owner,winnings=0)
+
+            new_syndicate.save()
+            new_syndicate.addMember(owner)
+                        
+            for email in content['emails']:
+                new_member = None
+                try:
+                    new_member = User.objects.get(email=email)
+                except ObjectDoesNotExist:
+                    continue
+                if new_member:
+                    new_syndicate.addMember(new_member)
+                    new_syndicate.save()
+                    new_member.save()
+                    
+        
 
 
 class AddUser(APIView):
@@ -62,12 +90,12 @@ class RemoveUser(APIView):
         content = request.data
         if syndicate.owner != user:
             if 'id' in content.keys():
-            user_to_delete = get_object_or_404(User,pk=content['id'])
-            if user_to_delete==user:
-                syndicate.safeDestroy()
-                return Response({"response":"success, syndicate deleted"},status=status.HTTP_200_OK)
-            else:
-                return HttpResponseForbidden()
+                user_to_delete = get_object_or_404(User,pk=content['id'])
+                if user_to_delete==user:
+                    syndicate.safeDestroy()
+                    return Response({"response":"success, syndicate deleted"},status=status.HTTP_200_OK)
+                else:
+                    return HttpResponseForbidden()
         #elif user is owner:
         if 'id' in content.keys():
             user_to_delete = get_object_or_404(User,pk=content['id'])
