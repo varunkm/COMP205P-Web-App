@@ -40,8 +40,8 @@ class AddUser(APIView):
         syndicate = get_object_or_404(Syndicate,pk=syndicate_pk)
         user = request.user
         content = request.data
-        if 'user' in content.keys():
-            email = content['user']
+        if 'email' in content.keys():
+            email = content['email']
             user_to_add = get_object_or_404(User,email=email)
             syndicate.addMember(user_to_add)
             return Response({'response':'success'},status=HTTP_200_OK)
@@ -63,8 +63,8 @@ class RemoveUser(APIView):
         if syndicate.owner != user:
             return HttpResponseForbidden()
 
-        if 'user' in content.keys():
-            user_to_delete = get_object_or_404(User,pk=content['user'])
+        if 'id' in content.keys():
+            user_to_delete = get_object_or_404(User,pk=content['id'])
             if user_to_delete==user:
                 syndicate.safeDestroy()
                 return Response({"response":"success, syndicate deleted"},status=status.HTTP_200_OK)
