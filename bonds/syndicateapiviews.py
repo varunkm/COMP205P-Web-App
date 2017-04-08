@@ -40,20 +40,23 @@ class SyndicateList(APIView):
 
         if 'name' in content.keys() and 'emails' in content.keys():
             new_syndicate = Syndicate(name=content['name'],owner=owner,winnings=0)
-
             new_syndicate.save()
             new_syndicate.addMember(owner)
-                        
+            emails_not_found = []
             for email in content['emails']:
                 new_member = None
                 try:
                     new_member = User.objects.get(email=email)
                 except ObjectDoesNotExist:
+                    emails_not_found+=[email]
                     continue
+                
                 if new_member:
                     new_syndicate.addMember(new_member)
                     new_syndicate.save()
                     new_member.save()
+            serializer = SyndicateSerializer(new_syndicate,context={'request':request})
+            return Response({'response':'success','new_syndicate':serializer.data,'emails_not_found':emails_not_found},status=status.HTTP_200_OK)
                     
         
 
