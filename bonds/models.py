@@ -85,6 +85,9 @@ class Syndicate(models.Model):
         user_investment  = self.getSharesAsMoney()
         user_shares = []
         for (user,investment) in user_investment:
+            if total_investment==0:
+                user_shares+=[(user,0.0)]
+                continue
             user_shares+=[(user,float(investment)/float(total_investment))]
         return user_shares
     
