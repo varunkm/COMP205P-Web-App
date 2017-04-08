@@ -18,6 +18,7 @@ from django.conf.urls import url, include
 from django.contrib import admin
 
 urlpatterns = [
+    url(r'^',include('bonds.urls')),
     url(r'^bonds/',include('bonds.urls')),
     url(r'^bonds/api/auth/',include('rest_auth.urls')),
     url(r'^admin/', admin.site.urls),

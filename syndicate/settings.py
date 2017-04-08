@@ -27,6 +27,7 @@ DEBUG = 'DEBUG' not in os.environ
 ALLOWED_HOSTS = ['safe-atoll-64469.herokuapp.com','127.0.0.1']
 
 LOGIN_REDIRECT_URL='/bonds/'
+LOGOUT_REDIRECT_URL='/bonds/'
 AUTH_PROFILE_MODULE = 'bonds.UserProfile'
 # Application definition
 
@@ -38,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_extensions',
     'rest_framework',
     'rest_framework.authtoken',
     'rest_auth',
