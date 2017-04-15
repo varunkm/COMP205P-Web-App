@@ -70,21 +70,31 @@ def pickReward():
     return 1000000
 
 def processPremiumBonds():
+    new_draw = PrizeDraw()
+    new_draw.save()
+    bond_rewards = BondReward(total_payout=0,winning_number=0)
+    
     print('processing premium bond rewards...')
     WINNING_CHANCE = 30000
     all_bonds = PremiumBond.objects.filter(live=True)
     winning_number = random.randint(1,WINNING_CHANCE)
     print(str(winning_number))
+
+    bond_rewards.winning_number=winning_number
+    bond_rewards.save()
     for bond in all_bonds:
         if bond.pk % WINNING_CHANCE == winning_number:
             print('bond ['+str(bond.pk)+'] has won')
+            bond_rewards.winning_bonds.add(bond)
             #bond has won
             reward = pickReward()
+            bond_rewards.total_payout+=reward
             print('reward: '+str(reward))
             if bond.group_owned:
                 rewardGroupOwned(bond,reward)
             else:
                 rewardSoleOwned(bond,reward)
+            bond_rewards.save()
 
 if __name__ == '__main__':    
     main()

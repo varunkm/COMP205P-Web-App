@@ -49,18 +49,36 @@
                 <button type="submit" class="waves-effect waves-light btn red"><i class="material-icons left">delete</i>Delete Group</button>
                 <a></a>
                 <a class="waves-effect waves-light btn activator"><i class="material-icons left">payment</i>Buy Bonds</a>
+                <a href ="#salemodal" class="waves-effect waves-light btn modal-trigger">Sell Bonds</a>
+
             </form>
             {% else %}
             <a class="waves-effect waves-light btn red"><i class="material-icons left">delete</i>Leave Group</a>
             <a class="waves-effect waves-light btn activator"><i class="material-icons left">payment</i>Buy Bonds</a>
+            <a href ="#salemodal" class="waves-effect waves-light btn modal-trigger">Sell Bonds</a>
             {% endif %}
-            
+
 
         </div>
     </div>
 </div>
-
 <div class="section">
+  <div id="salemodal" class="modal">
+    <div class="modal-content">
+      <form action="sell" method="POST">
+        {% csrf_token %}
+        <label for="amount_input">Slide to select sale amount:</label>
+        <p class="range-field">
+            <input type="range" name="amount" id="amount_input" value="0" oninput="amount_id.value = amount_input.value" min="0" max="{{ user_invested }}" />
+        </p>
+        <br>
+        <h4 class="grey-text">
+            Confirm sale of £<output class="teal-text" name="amount_output" id="amount_id">0</output> worth of bonds?
+        </h4>
+        <button type="submit" class="waves-effect waves-light btn">Confirm</button>
+      </form>
+    </div>
+  </div>
     <div class="container">
         <div class="row">
             <div class="col s12 m8">
@@ -105,7 +123,7 @@
                                         {% endfor %}
                                     </table>
                                 </div>
-                          
+
                                 <div class="col s6">
                                     <div class="card-content">
                                         <div id ="pie-chart">
@@ -146,6 +164,11 @@
             </div>
         </div>
     </div>
+    <script>
+    $(document).ready(function(){
+        $('.modal-trigger').leanModal();
+    });
+    </script>
     <script>
      Highcharts.chart('pie-chart', {
          chart: {

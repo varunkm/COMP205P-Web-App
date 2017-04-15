@@ -169,6 +169,7 @@ class ProductInfo(models.Model):
     min_deposit = models.IntegerField()
     payout_period = models.IntegerField()
     link = models.CharField(max_length=140,default="")
+    color = models.TextField(default="#00000")
     
 class Account(models.Model):
     created = models.DateTimeField(auto_now_add=True)
@@ -190,7 +191,6 @@ class Account(models.Model):
         self.balance+=amount
         return amount
             
-
 class Transaction(models.Model):
     created=models.DateTimeField(auto_now_add=True)
     account = models.ForeignKey(Account)
@@ -202,6 +202,9 @@ class BondReward(models.Model):
     winning_bonds= models.ManyToManyField(PremiumBond)
     total_payout = models.IntegerField()
     winning_number = models.IntegerField()
+
+class PrizeDraw(models.Model):
+    date = models.DateTimeField(auto_now_add=True)
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
