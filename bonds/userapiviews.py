@@ -40,7 +40,21 @@ class UserDetail(APIView):
             serializer = UserShortSerializer(user,context={'request':request})
             return Response(serializer.data)
 
+class UserHaveIWon(APIView):
+    """
+    #GET
+    Will return details of latest prize draw with respect to the user
+    """
 
+    def get(self,request,format=None):
+        latest_prize_draw = PrizeDraw.objects.latest('date')
+        user = request.user
+        haveiwon = user in latest_prize_draw.getWinningUsers()
+
+        data = {'latest_draw':latest_prize_draw.date,'did_you_win':haveiwon}
+        return Response(data,status=status.HTTP_200_OK)
+    
+        
 class UserViewModify(APIView):
     """    
     #PUT - Update user info

@@ -192,12 +192,14 @@ class APIRoot(APIView):
             self.genAPIRow("logged in user update/view",str(reverse("user-view-and-modify",request=request)))+
             self.genAPIRow("user create",str(reverse("user-create",request=request)))+
             self.genAPIRow("user self owned bonds",str(reverse("user-bonds",request=request)))+
+            self.genAPIRow("user have i won?",str(reverse("user-haveiwon",request=request)))+
             self.br()+self.header('Syndicate Queries')+
             self.genAPIRow("syndicate list",str(reverse("syndicate-list",request=request)))+
             self.genAPIRow("syndicate detail",str(reverse("syndicate-detail",kwargs={'pk':2},request=request)))+
             self.genAPIRow("syndicate bonds",str(reverse("bonds-list",kwargs={'syndicate_pk':1},request=request)))+
             self.genAPIRow("syndicate remove user",str(reverse("remove-user",kwargs={'syndicate_pk':1},request=request)))+
             self.genAPIRow("syndicate add user",str(reverse("add-user",kwargs={'syndicate_pk':1},request=request)))+
+            self.genAPIRow("syndicate have i won?",str(reverse("syndicate-haveiwon",kwargs={'syndicate_pk':1},request=request)))+
             self.br()+self.header('Account Queries')+
             self.genAPIRow("account list",str(reverse("account-list",request=request)))+
             self.genAPIRow("account detail",str(reverse("account-detail",kwargs={"pk":1},request=request)))+

@@ -206,6 +206,30 @@ class BondReward(models.Model):
 class PrizeDraw(models.Model):
     date = models.DateTimeField(auto_now_add=True)
 
+    def getWinningSyndicates(self):
+        try:
+            this_reward = BondReward.objects.get(created=self.date)
+        except:
+            return []
+        bonds = this_reward.winnings_bonds.all()
+        syndicates = []
+        for bond in bonds:
+            if bond.group_owned and not bond.group_owner in syndicates:
+                syndicates+=[bond.group_owner]
+        return syndicates
+
+    def getWinningUsers(self):
+        try:
+            this_reward = BondReward.objects.get(created=self.date)
+        except:
+            return []
+        bonds = this_reward.winnings_bonds.all()
+        users = []
+        for bond in bonds:
+            if not bond.group_owned and not bond.user_owner in user:
+                users+=[bond.user_owner]
+        return users
+
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:

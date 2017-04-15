@@ -132,8 +132,22 @@ class SyndicateDetail(APIView):
             return Response(serializer.data)
         else:
             return HttpResponseForbidden()
+        
+class SyndicateHaveIWon(APIView):
+    """
+    #GET
+    Will return details of latest prize draw with respect to the syndicate
+    """
 
-   
+    def get(self,request,syndicate_pk,format=None):
+        latest_prize_draw = PrizeDraw.objects.latest('date')
+        syndicate = get_object_or_404(Syndicate,pk=syndicate_pk)
+        haveiwon = syndicate in latest_prize_draw.getWinningSyndicates()
+
+        data = {'latest_draw':latest_prize_draw.date,'did_you_win':haveiwon}
+        return Response(data,status=status.HTTP_200_OK)
+    
+
 class BondsList(APIView):
     """
     #POST:

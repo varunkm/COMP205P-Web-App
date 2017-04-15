@@ -28,11 +28,13 @@ urlpatterns = [
     url(r'^api/user/create/$',UserCreate.as_view(),name='user-create'),
     url(r'^api/user/transactions/$',UserTransactions.as_view(),name='user-transactions'),
     url(r'^api/user/bonds/$',UserBonds.as_view(),name='user-bonds'),
+    url(r'^api/user/haveiwon/$',UserHaveIWon.as_view(),name='user-haveiwon'),
 
     
     url(r'^api/syndicate/(?P<pk>[0-9]+)/$', SyndicateDetail.as_view(),name='syndicate-detail'),
     url(r'^api/syndicates/$', SyndicateList.as_view(),name='syndicate-list'),
     url(r'^api/syndicate/(?P<syndicate_pk>[0-9]+)/bonds/$', BondsList.as_view(),name='bonds-list'),
+    url(r'^api/syndicate/(?P<syndicate_pk>[0-9]+)/haveiwon/$', SyndicateHaveIWon.as_view(),name='syndicate-haveiwon'),
     url(r'^api/syndicate/(?P<syndicate_pk>[0-9]+)/manage/remove_member/$', RemoveUser.as_view(),name='remove-user'),
      url(r'^api/syndicate/(?P<syndicate_pk>[0-9]+)/manage/add_member/$', AddUser.as_view(),name='add-user'),
 
